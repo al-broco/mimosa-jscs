@@ -17,42 +17,79 @@ github. In the root directory of your project, type:
 
     npm install --save-dev "al-broco/mimosa-jscs"
 
-Next, add `jscs` to your project's list of modules. 
+Next, add `jscs` to your project's list of modules.
 
 Configuration
 -------------
 
 To customize the linting you need to add a `jscs` configuration to
-your project's `mimosa-config`. `mimosa-jscs` is configured in the
-same way as [Mimosa's built-in linting
-tools](http://mimosa.io/configuration.html#lint):
+your project's `mimosa-config`. `mimosa-jscs` is configured similarly
+as [Mimosa's built-in linting
+tools](http://mimosa.io/configuration.html#lint). The configuration
+options and the default values are as follows:
 
     jscs: {
         exclude: [],
         compiled: true,
         copied: true,
         vendor: false,
+        configFile: undefined,
         rules: {}
     }
 
-### `jscs.exclude`, `jscs.compiled`, `jscs.copied`, `jscs.vendor`
+Which files are linted are controlled by the `jscs.exclude`,
+`jscs.compiled`, `jscs.copied`, and `jscs.vendor` options. These
+options work just like the corresponding options for the
+[JSHint Mimosa plugin](http://mimosa.io/configuration.html#lint).
 
-These options behave just like the corresponding options for the
-[http://mimosa.io/configuration.html#lint](JSHint Mimosa plugin) and
-they have the same defaults.
+The `jscs.configFile` and `jscs.rules` controls JSCS linting, which
+rules are enabled and how they are configured. JSCS configuration
+options are described in detail in [the JSCS
+documentation](https://github.com/jscs-dev/node-jscs#options). Currently,
+the only options supported are
+[`preset`](https://github.com/jscs-dev/node-jscs#preset) and
+[configuration of individual
+rules](https://github.com/jscs-dev/node-jscs#rules). Other options
+(such as
+[`excludeFiles`](https://github.com/jscs-dev/node-jscs#excludefiles)
+and
+[`fileExtensions`](https://github.com/jscs-dev/node-jscs#fileextensions))
+may be supported in the future.
 
-### `jscs.rules`
+`jscs.configFile` is the file name of a JSCS configuration file,
+absolute or relative to the project's root. In contrast to [running
+JSCS from the command
+line](https://github.com/jscs-dev/node-jscs#--config), `mimosa-jscs`
+will not search other directories outside of your project for a
+configuration file. In particular, it wll not search your home
+directory or the project directory's ancestors for a file named
+`.jscsrc` or `.jscs.json`. This is to make building independent of
+external files not part of the Mimosa project.
 
-Configures JSCS linting, see [the JSCS
-documentation](https://github.com/jscs-dev/node-jscs) for details.
+`mimosa-jscs` reads configuration files the same way as JSCS does,
+which means that the file format is determined from the file name:
+* If the file extension is `.js` or `.json`, the file is read using
+Node's
+[`require`](http://nodejs.org/api/modules.html#modules_file_modules). Special
+case: if the file name is `package.json`, the file is read using
+`require` and the configuration is taken from a property called
+`jscsConfig`.
+* Otherwise the file is treated as commented JSON. Comments are
+stripped using
+[strip-json-comments](https://www.npmjs.org/package/strip-json-comments)
+and then a JSON parser is used to read the file.
 
-Rules and presets are supported. Options that control which files are
-linted, such as `excludeFiles` and `fileExtensions` are not supported.
+Both `configFile` and `rules` can be specified at the same time. In
+that case the configuration passed to JSCS will be the configuration
+found in the file overridden by anything found in `rules`. Note that
+in JSCS rules always override presets meaning that a rule configured
+in the file will still override a preset configured in `rules`.
 
 ### Examples
 
-To validate your Javascript use to JSCS' Crockford preset, add the
-following configuration:
+To lint your Javascript use to JSCS'
+[Crockford](http://javascript.crockford.com/code.html) preset, add the
+following to your project's Mimosa configuration:
 
     jscs: {
       rules: {
@@ -60,7 +97,7 @@ following configuration:
       }
     }
 
-The following configuration will check according to the Crockford
+The following configuration will lint according to the Crockford
 preset and also check that all comments starts with a capital letter:
 
     jscs: {
@@ -70,14 +107,30 @@ preset and also check that all comments starts with a capital letter:
       }
     }
 
-To disable a rule, set it to `null`. The following configration will
-validate using the Crockford preset but disable indentation checking:
+To disable a rule, set it to `null` (this is [standard JSCS
+behavior](https://github.com/jscs-dev/node-jscs#example-1)). The
+following configration will lint using the Crockford preset but
+disable indentation checking:
 
     jscs: {
       rules: {
         preset: 'crockford',
         validateIndentation: null
       }
+    }
+
+The following module configuration will read the JSCS configuration
+from the project's `package.json`:
+
+    jscs: {
+      configFile: 'package.json'
+    }
+
+To lint using the Crockford preset, add the following to your
+`package.json`:
+
+    jscsConfig: {
+        preset: 'crockford'
     }
 
 
