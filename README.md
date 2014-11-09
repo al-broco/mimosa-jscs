@@ -137,7 +137,7 @@ To lint using the Crockford preset, add the following to your
 Compatibility
 -------------
 
-This module uses version 1.7.3 of JSCS.
+This module uses a version of JSCS compatible with 1.7.3.
 
 It has been tested with Mimosa version 2.3.17 but should work with
 other versions of Mimosa as well.
