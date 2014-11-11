@@ -3,3 +3,4 @@ lib/
 .DS_Store
 node_modules
 mimosa-config.coffee
+test
