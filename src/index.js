@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var config = require("./config");
+var config = require('./config');
 var jscs;
 var logger;
 
@@ -9,8 +9,8 @@ function registration (mimosaConfig, register) {
 
   var extensions = getFileExtensions(mimosaConfig);
   if (extensions.length > 0) {
-    register(["buildFile", "add", "update"],
-             "afterCompile",
+    register(['buildFile', 'add', 'update'],
+             'afterCompile',
              onMimosaWorkflowCallback, extensions);
   }
 }
@@ -23,12 +23,12 @@ function getFileExtensions(mimosaConfig) {
   var result = [];
 
   if (mimosaConfig.jscs.copied || mimosaConfig.jscs.vendor) {
-    result.push("js");
+    result.push('js');
   }
 
   if (mimosaConfig.jscs.compiled) {
     mimosaConfig.extensions.javascript.forEach(function (extension) {
-      extension !== "js" && result.push(extension);
+      extension !== 'js' && result.push(extension);
     });
   }
 
@@ -82,14 +82,14 @@ function shouldProcessFilesBasedOnOptions(moduleConfig, mimosaOptions) {
  * been skipped.
  */
 function logSkippedFiles(mimosaOptions) {
-  mimosaOptions.files.forEach(function(file) {
-    var message = "Not JSCS linting ";
-    mimosaOptions.isCopy && (message += "copied ");
+  mimosaOptions.files.forEach(function (file) {
+    var message = 'Not JSCS linting ';
+    mimosaOptions.isCopy && (message += 'copied ');
     !mimosaOptions.isCopy &&
       mimosaOptions.isJavascript &&
-      (message += "compiled ");
-    mimosaOptions.isVendor && (message += "vendor ");
-    message += "file [[ " + file.inputFileName + " ]]";
+      (message += 'compiled ');
+    mimosaOptions.isVendor && (message += 'vendor ');
+    message += 'file [[ ' + file.inputFileName + ' ]]';
     logger.debug(message);
   });
 }
@@ -99,12 +99,12 @@ function logSkippedFiles(mimosaOptions) {
  * module configuration.
  */
 function processFiles(moduleConfig, files) {
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     if (shouldProcessFile(moduleConfig, file)) {
       processFile(moduleConfig, file);
     } else {
-      logger.debug("Excluding [[ " + file.inputFileName +
-                   " ]] from JSCS linting");
+      logger.debug('Excluding [[ ' + file.inputFileName +
+                   ' ]] from JSCS linting');
     }
   });
 }
@@ -160,9 +160,9 @@ function processFile(moduleConfig, file) {
  */
 function logJscsError (fileName, error) {
   var msg = createErrorMessage(fileName,
-			       error.message,
-			       error.line,
-			       error.column);
+                               error.message,
+                               error.line,
+                               error.column);
   logger.warn(msg);
 }
 
@@ -170,9 +170,9 @@ function logJscsError (fileName, error) {
  * Creates an error message based on file name, line number, etc.
  */
 function createErrorMessage(fileName, message, lineNumber, columnNumber) {
-  message = "JSCS Error: " + message + ", in file [[ " + fileName + " ]]";
-  lineNumber && (message += ", at line number [[ " + lineNumber + " ]]");
-  columnNumber && (message += " column [[ " + columnNumber + " ]]");
+  message = 'JSCS Error: ' + message + ', in file [[ ' + fileName + ' ]]';
+  lineNumber && (message += ', at line number [[ ' + lineNumber + ' ]]');
+  columnNumber && (message += ' column [[ ' + columnNumber + ' ]]');
   return message;
 }
 
@@ -181,7 +181,7 @@ function createErrorMessage(fileName, message, lineNumber, columnNumber) {
  */
 function loadJscs(moduleConfig) {
   if (!jscs) {
-    jscs = new (require("jscs"))();
+    jscs = new (require('jscs'))();
     jscs.registerDefaultRules();
     jscs.configure(moduleConfig.rules);
   }

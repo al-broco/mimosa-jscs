@@ -1,12 +1,12 @@
-"use strict";
+'use strict';
 
-var fs = require("fs");
-var path = require("path");
-var stripJSONComments = require("strip-json-comments");
+var fs = require('fs');
+var path = require('path');
+var stripJSONComments = require('strip-json-comments');
 
 var logger;
 
-exports.defaults = function() {
+exports.defaults = function () {
   return {
     jscs: {
       exclude: [],
@@ -18,46 +18,46 @@ exports.defaults = function() {
   };
 };
 
-exports.placeholder = function() {
+exports.placeholder = function () {
   // TODO: Document
-  return "";
+  return '';
 };
 
-exports.validate = function(config, validators) {
+exports.validate = function (config, validators) {
   logger = config.log;
 
   var errors = [];
 
-  if (validators.ifExistsIsObject(errors, "jscs config", config.jscs)) {
+  if (validators.ifExistsIsObject(errors, 'jscs config', config.jscs)) {
     // Note: Call below will modify config to have an
     // jscs.excludeRegex and change jscs.exclude to have absolute
     // paths
     validators.ifExistsFileExcludeWithRegexAndString(errors,
-						     "jscs.exclude",
-						     config.jscs,
-						     config.watch.sourceDir);
+                                                     'jscs.exclude',
+                                                     config.jscs,
+                                                     config.watch.sourceDir);
 
-    ["compiled", "copied", "vendor"].forEach(function(type) {
-      validators.ifExistsIsBoolean(errors, "jscs." + type, config.jscs[type]);
+    ['compiled', 'copied', 'vendor'].forEach(function (type) {
+      validators.ifExistsIsBoolean(errors, 'jscs.' + type, config.jscs[type]);
     });
 
-    if (!validators.ifExistsIsObject(errors, "jscs.rules", config.jscs.rules)) {
+    if (!validators.ifExistsIsObject(errors, 'jscs.rules', config.jscs.rules)) {
       // Make sure jscs.rules exists and is an object
       config.jscs.rules = { };
     }
 
     var configFileExists = ifExistsIsFile(validators,
-					  errors,
-					  "jscs.configFile",
-					  config.jscs.configFile,
-					  config.root);
+                                          errors,
+                                          'jscs.configFile',
+                                          config.jscs.configFile,
+                                          config.root);
     if (configFileExists) {
       // Merge property from config file into rules property, rules
       // properties overriding config file properties
       var jscsConfig = getContent(config.jscs.configFile, config.root);
       for (var property in jscsConfig) {
-	property in config.jscs.rules ||
-	  (config.jscs.rules[property] = jscsConfig[property]);
+        property in config.jscs.rules ||
+          (config.jscs.rules[property] = jscsConfig[property]);
       }
     }
   }
@@ -75,11 +75,11 @@ function ifExistsIsFile(validators, errors, fld, file, relTo) {
 
   var fullPath = path.resolve(relTo, file);
   if (!fs.existsSync(fullPath)) {
-    errors.push("" + fld + " [[ " + fullPath + " ]] cannot be found");
+    errors.push('' + fld + ' [[ ' + fullPath + ' ]] cannot be found');
     return false;
   }
   if (!fs.statSync(fullPath).isFile()) {
-    errors.push("" + fld + " [[ " + fullPath + " ]] exists but is not a file");
+    errors.push('' + fld + ' [[ ' + fullPath + ' ]] exists but is not a file');
     return false;
   }
 
@@ -105,12 +105,12 @@ function getContent(config, directory) {
     ext = path.extname(configPath);
 
     if (ext === '.js' || ext === '.json') {
-      logger.debug("Loading JSCS config from [[ " + configPath + " ]] " +
-		   "using Node require");
+      logger.debug('Loading JSCS config from [[ ' + configPath + ' ]] ' +
+                   'using Node require');
       content = require(configPath);
     } else {
-      logger.debug("Loading JSCS config from [[ " + configPath + " ]] " +
-		   "as JSON (with comments removed)");
+      logger.debug('Loading JSCS config from [[ ' + configPath + ' ]] ' +
+                   'as JSON (with comments removed)');
       content = JSON.parse(
         stripJSONComments(
           fs.readFileSync(configPath, 'utf8')
@@ -126,12 +126,13 @@ function getContent(config, directory) {
   }
 
   if (content && config === 'package.json') {
-    if ("jscsConfig" in content) {
-      logger.debug("Using JSCS config in jscsConfig property of " +
-		   "[[ " + configPath + " ]]");
+    if ('jscsConfig' in content) {
+      logger.debug('Using JSCS config in jscsConfig property of ' +
+                   '[[ ' + configPath + ' ]]');
     } else {
-      logger.warn("Loading JSCS config from [[ " + configPath + " ]], " +
-		  "but [[ " + configPath + " ]] is missing a jscsConfig property");
+      logger.warn('Loading JSCS config from [[ ' + configPath + ' ]], ' +
+                  'but [[ ' + configPath + ' ]] is missing a jscsConfig ' +
+                  'property');
     }
 
     return content.jscsConfig;

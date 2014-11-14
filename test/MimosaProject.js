@@ -8,7 +8,7 @@ Promise.longStackTraces();
 
 var path = require('path');
 var fs = Promise.promisifyAll(require('fs'));
-var child_process = Promise.promisifyAll(require('child_process'));
+var childProcess = Promise.promisifyAll(require('child_process'));
 var temp = Promise.promisifyAll(require('temp')).track();
 var stripAnsi = require('strip-ansi');
 
@@ -32,7 +32,7 @@ module.exports = MimosaProject;
  *
  * Build the project in a temp directory:
  *
- * project.build().then(function(result) {
+ * project.build().then(function (result) {
  *   // Perform tests on build results
  * });
  *
@@ -51,7 +51,7 @@ module.exports = MimosaProject;
  */
 function MimosaProject() {
   this.mimosaConfig = {
-    modules: [ 'copy' ]
+    modules: ['copy']
   };
   this.files = {
     assets: {
@@ -76,7 +76,7 @@ function MimosaProject() {
  * and that is resolved with the output (stdout and stderr combined)
  * if successful.
  */
-MimosaProject.prototype.exec = function(cmd) {
+MimosaProject.prototype.exec = function (cmd) {
   var args = Array.prototype.slice.call(arguments, 1);
 
   return this
@@ -89,7 +89,7 @@ MimosaProject.prototype.exec = function(cmd) {
 // Internal function for executing a command
 function exec(cmd, args, workingDir) {
   return new Promise(function (resolve, reject) {
-    var process = child_process.spawn(cmd, args, { cwd: workingDir });
+    var process = childProcess.spawn(cmd, args, { cwd: workingDir });
 
     var output = '';
     ['stdout', 'stderr'].forEach(function (stream) {
@@ -121,7 +121,7 @@ function exec(cmd, args, workingDir) {
  * If called multiple times it will return the same promise, so the
  * directory is only created once.
  */
-MimosaProject.prototype.createRootDir = function() {
+MimosaProject.prototype.createRootDir = function () {
   if (!this.promises.createRootDir) {
     this.promises.createRootDir =
       temp.mkdirAsync({ prefix: 'mimosa-project-' });
@@ -141,7 +141,7 @@ MimosaProject.prototype.createRootDir = function() {
  * If called multiple times it will return the same promise, so the
  * directory structure is only created once.
  */
-MimosaProject.prototype.createProjectFiles = function() {
+MimosaProject.prototype.createProjectFiles = function () {
   if (!this.promises.createProjectFiles) {
     if (!this.files['mimosa-config.js']) {
       this.files['mimosa-config.js'] = 'exports.config = \n' +
@@ -150,7 +150,7 @@ MimosaProject.prototype.createProjectFiles = function() {
 
     this.promises.createProjectFiles = this.createRootDir()
       .bind(this)
-      .then(function(rootDir) {
+      .then(function (rootDir) {
         return populateDirectory(rootDir, this.files);
       });
   }
@@ -200,11 +200,11 @@ function createFileOrDir(path, contents) {
  *
  * If the buid fails the promise is rejected with an Error.
  */
-MimosaProject.prototype.build = function() {
+MimosaProject.prototype.build = function () {
   return this
     .createProjectFiles()
     .bind(this)
-    .then(function() {
+    .then(function () {
       return this.exec('mimosa', 'build', '--errorout');
     })
     .then(function (output) {

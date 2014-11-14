@@ -4,7 +4,7 @@ var expect = require('expect');
 var Promise = require('bluebird');
 var MimosaProject = require('./MimosaProject');
 
-describe('node-jscs', function(){
+describe('node-jscs', function () {
   var project;
 
   beforeEach(function () {
@@ -28,8 +28,8 @@ describe('node-jscs', function(){
   function extractJscsViolations(buildResult) {
     var violations = [];
     buildResult.warnings.forEach(function (warning) {
-      warning.message.indexOf('JSCS Error:') === 0
-        && violations.push(warning.message);
+      warning.message.indexOf('JSCS Error:') === 0 &&
+        violations.push(warning.message);
     });
     return Promise.resolve(violations, buildResult);
   }
@@ -99,21 +99,21 @@ describe('node-jscs', function(){
       { compiled: false, copied: false, vendor: false,
         expectedLintedFiles: [] },
       { compiled: false, copied: true, vendor: false,
-        expectedLintedFiles: [ 'copied.js' ] },
+        expectedLintedFiles: ['copied.js'] },
       { compiled: true, copied: false, vendor: false,
-        expectedLintedFiles: [ 'compiled.coffee' ] },
+        expectedLintedFiles: ['compiled.coffee'] },
       { compiled: true, copied: true, vendor: false,
-        expectedLintedFiles: [ 'copied.js', 'compiled.coffee' ] },
+        expectedLintedFiles: ['copied.js', 'compiled.coffee'] },
       { compiled: false, copied: false, vendor: true,
-        expectedLintedFiles: [ 'copied-vendor.js' ] },
+        expectedLintedFiles: ['copied-vendor.js'] },
       { compiled: false, copied: true, vendor: true,
-        expectedLintedFiles: [ 'copied.js', 'copied-vendor.js' ] },
+        expectedLintedFiles: ['copied.js', 'copied-vendor.js'] },
       { compiled: true, copied: false, vendor: true,
-        expectedLintedFiles: [ 'compiled.coffee', 'copied-vendor.js' ] },
+        expectedLintedFiles: ['compiled.coffee', 'copied-vendor.js'] },
       { compiled: true, copied: true, vendor: true,
-        expectedLintedFiles: [ 'copied.js',
-                               'compiled.coffee',
-                               'copied-vendor.js' ] },
+        expectedLintedFiles: ['copied.js',
+                              'compiled.coffee',
+                              'copied-vendor.js'] },
     ].forEach(function (params) {
       var count = params.expectedLintedFiles.length;
       var description =
