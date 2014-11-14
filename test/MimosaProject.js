@@ -46,7 +46,8 @@ module.exports = MimosaProject;
  *   mimosa-config.js file, one will be created from this object.
  *
  * Default mimosaConfig lists one module, 'copy'. Default files object
- * has an assets directory with a javascripts subdirectory.
+ * has directories assets, assets/javascript, and
+ * assets/javascript/vendor.
  */
 function MimosaProject() {
   this.mimosaConfig = {
@@ -55,6 +56,7 @@ function MimosaProject() {
   this.files = {
     assets: {
       javascripts: {
+        vendor: { }
       }
     }
   };
