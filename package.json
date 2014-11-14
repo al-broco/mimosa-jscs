@@ -30,6 +30,6 @@
     "temp": "^0.8.1"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha --timeout 120s"
+    "test": "npm cache clean mimosa-jscs && node_modules/.bin/mocha --timeout 120s"
   }
 }
