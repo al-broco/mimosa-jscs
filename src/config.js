@@ -19,8 +19,42 @@ exports.defaults = function () {
 };
 
 exports.placeholder = function () {
-  // TODO: Document
-  return '';
+  // Text below based on jshint's placeholder text by dbashford
+  return '\n' +
+    'jscs:                     # Settings for javascript JSCS linting, more\n' +
+    '                          # ' +
+    'detailed documentation can be found at the project\n' +
+    '                          # homepage at\n' +
+    '                          # https://github.com/al-broco/mimosa-jscs\n' +
+    '  exclude: []             # ' +
+    'Array of strings or regexes that match files to not\n' +
+    '                          # ' +
+    'lint, strings are paths that can be relative to the\n' +
+    '                          # watch.sourceDir or absolute\n' +
+    '  compiled: true          # ' +
+    'Fire jscs on successful compile of meta-language to\n' +
+    '                          # javascript\n' +
+    '  copied: true            # Fire jscs for copied javascript files\n' +
+    '  vendor: false           # ' +
+    'Fire jscs for copied vendor javascript files\n' +
+    '  # configFile: \'.jscsrc\' # ' +
+    'This is the path, either relative to the root of the\n' +
+    '                          # ' +
+    'project or absolute, to a JSCS configuration file.\n' +
+    '                          # ' +
+    'If the file extension is .js or .json the file will\n' +
+    '                          # ' +
+    'be read using Node\'s require. Otherwise the file\n' +
+    '                          # ' +
+    'will be read as commented JSON. If the file name is\n' +
+    '                          # ' +
+    'package.json, the JSCS configuration is expected to\n' +
+    '                          # be found in a property jscsConfig.\n' +
+    '  rules: { }              # ' +
+    'Configuration: https://www.npmjs.org/package/jscs,\n' +
+    '                          # ' +
+    'these settings will override any settings set up in\n' +
+    '                          # the configuration file.\n';
 };
 
 exports.validate = function (config, validators) {
