@@ -22,7 +22,7 @@ function registration (mimosaConfig, register) {
 function getFileExtensions(mimosaConfig) {
   var result = [];
 
-  if (mimosaConfig.jscs.copied) {
+  if (mimosaConfig.jscs.copied || mimosaConfig.jscs.vendor) {
     result.push("js");
   }
 
@@ -56,8 +56,11 @@ function onMimosaWorkflowCallback(mimosaConfig, options, next) {
  * etc.
  */
 function shouldProcessFilesBasedOnOptions(moduleConfig, mimosaOptions) {
-  if (mimosaOptions.isVendor && !moduleConfig.vendor) {
-    return false;
+  // Special treatment of vendor files - setting vendor to true lints
+  // copied vendor files regardless of copy option, compiled vendor
+  // files are never linted
+  if (mimosaOptions.isVendor) {
+    return moduleConfig.vendor && mimosaOptions.isCopy;
   }
 
   if (mimosaOptions.isCopy && !moduleConfig.copied) {
