@@ -9,7 +9,7 @@ function registration (mimosaConfig, register) {
 
   var extensions = getFileExtensions(mimosaConfig);
   if (extensions.length > 0) {
-    register(["buildFile", "add", "update"], 
+    register(["buildFile", "add", "update"],
              "afterCompile",
              onMimosaWorkflowCallback, extensions);
   }
@@ -64,9 +64,9 @@ function shouldProcessFilesBasedOnOptions(moduleConfig, mimosaOptions) {
     return false;
   }
 
-  if (mimosaOptions.isJavascript && 
-      !mimosaOptions.isCopy && 
-      !moduleConfig.compiled) 
+  if (mimosaOptions.isJavascript &&
+      !mimosaOptions.isCopy &&
+      !moduleConfig.compiled)
   {
     return false;
   }
@@ -82,8 +82,8 @@ function logSkippedFiles(mimosaOptions) {
   mimosaOptions.files.forEach(function(file) {
     var message = "Not JSCS linting ";
     mimosaOptions.isCopy && (message += "copied ");
-    !mimosaOptions.isCopy && 
-      mimosaOptions.isJavascript && 
+    !mimosaOptions.isCopy &&
+      mimosaOptions.isJavascript &&
       (message += "compiled ");
     mimosaOptions.isVendor && (message += "vendor ");
     message += "file [[ " + file.inputFileName + " ]]";
@@ -100,7 +100,7 @@ function processFiles(moduleConfig, files) {
     if (shouldProcessFile(moduleConfig, file)) {
       processFile(moduleConfig, file);
     } else {
-      logger.debug("Excluding [[ " + file.inputFileName + 
+      logger.debug("Excluding [[ " + file.inputFileName +
                    " ]] from JSCS linting");
     }
   });
@@ -136,7 +136,7 @@ function isFileExcludedBasedOnName(moduleConfig, fileName) {
   if (moduleConfig.excludeRegex && fileName.match(moduleConfig.excludeRegex)) {
     return true;
   }
-  
+
   return false;
 }
 
@@ -156,9 +156,9 @@ function processFile(moduleConfig, file) {
  * Logs a JSCS error.
  */
 function logJscsError (fileName, error) {
-  var msg = createErrorMessage(fileName, 
-			       error.message, 
-			       error.line, 
+  var msg = createErrorMessage(fileName,
+			       error.message,
+			       error.line,
 			       error.column);
   logger.warn(msg);
 }
