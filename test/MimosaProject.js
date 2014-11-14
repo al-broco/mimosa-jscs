@@ -205,7 +205,7 @@ MimosaProject.prototype.build = function() {
     .createProjectFiles()
     .bind(this)
     .then(function() {
-      return this.exec('mimosa', 'build');
+      return this.exec('mimosa', 'build', '--errorout');
     })
     .then(function (output) {
       return Promise.resolve(new BuildResult(output));
