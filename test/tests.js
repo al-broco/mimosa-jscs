@@ -8,9 +8,17 @@ describe('node-jscs', function(){
   var project;
 
   beforeEach(function () {
-    project = new MimosaProject();
-    project.mimosaConfig.modules.push('jscs');
-    return project.exec('npm', 'install', path.normalize(process.cwd()));
+    function setup() {
+      project = new MimosaProject();
+      project.mimosaConfig.modules.push('jscs');
+      return project.exec('npm', 'install', path.normalize(process.cwd()));
+    }
+
+    // Setup sometimes fails because npm install fails. This appears
+    // to be random and possibly a bug in npm. The code below is a
+    // workaround that retries the installation twice before giving
+    // up.
+    return setup().catch(setup).catch(setup);
   });
 
   // Helper function that, given a MimosaProject build result, returns
