@@ -1,5 +1,6 @@
 'use strict';
 
+var path = require('path');
 var config = require('./config');
 var jscs;
 var logger;
@@ -41,7 +42,7 @@ function getFileExtensions(mimosaConfig) {
  */
 function onMimosaWorkflowCallback(mimosaConfig, options, next) {
   if (shouldProcessFilesBasedOnOptions(mimosaConfig.jscs, options)) {
-    processFiles(mimosaConfig.jscs, options.files);
+    processFiles(mimosaConfig, options.files);
   } else {
     logSkippedFiles(options);
   }
@@ -98,10 +99,10 @@ function logSkippedFiles(mimosaOptions) {
  * Lints the files in an array that should be linted based on the
  * module configuration.
  */
-function processFiles(moduleConfig, files) {
+function processFiles(mimosaConfig, files) {
   files.forEach(function (file) {
-    if (shouldProcessFile(moduleConfig, file)) {
-      processFile(moduleConfig, file);
+    if (shouldProcessFile(mimosaConfig, file)) {
+      processFile(mimosaConfig.jscs, file);
     } else {
       logger.debug('Excluding [[ ' + file.inputFileName +
                    ' ]] from JSCS linting');
@@ -113,12 +114,17 @@ function processFiles(moduleConfig, files) {
  * Returns true of a given file should be linted based on the
  * configuration.
  */
-function shouldProcessFile(moduleConfig, file) {
+function shouldProcessFile(mimosaConfig, file) {
   if (!file.outputFileText) {
     return false;
   }
 
-  if (isFileExcludedBasedOnName(moduleConfig, file.inputFileName)) {
+  var relativePath = path.relative(mimosaConfig.watch.sourceDir,
+                                   file.inputFileName);
+  if (isFileExcludedBasedOnName(mimosaConfig.jscs,
+                                file.inputFileName,
+                                relativePath))
+  {
     return false;
   }
 
@@ -129,14 +135,19 @@ function shouldProcessFile(moduleConfig, file) {
  * Returns true if a file should be excluded based on file name
  * according to the module configuration.
  */
-function isFileExcludedBasedOnName(moduleConfig, fileName) {
+function isFileExcludedBasedOnName(moduleConfig,
+                                   absolutePath,
+                                   relativePath)
+{
   // Note that config validation has modified moduleConfig.exlude and
   // create moduleConfig.excludeRegex
-  if ((moduleConfig.exclude || []).indexOf(fileName) !== -1) {
+  if ((moduleConfig.exclude || []).indexOf(absolutePath) !== -1) {
     return true;
   }
 
-  if (moduleConfig.excludeRegex && fileName.match(moduleConfig.excludeRegex)) {
+  if (moduleConfig.excludeRegex &&
+      relativePath.match(moduleConfig.excludeRegex))
+  {
     return true;
   }
 
