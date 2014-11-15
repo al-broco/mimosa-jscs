@@ -21,34 +21,13 @@ describe('node-jscs', function () {
     return setup().catch(setup).catch(setup);
   });
 
-  // Helper function that, given a MimosaProject build result, returns
-  // a resolved promise with an array of JSCS violations. Intended for
-  // chaining after MimosaProject.build to get easy access to
-  // violations.
-  function extractJscsViolations(buildResult) {
-    var violations = [];
-    buildResult.warnings.forEach(function (warning) {
-      warning.message.indexOf('JSCS Error:') === 0 &&
-        violations.push(warning.message);
-    });
-    return Promise.resolve(violations, buildResult);
-  }
-
-  // Helper function that builds and invokes a test function with
-  // violations, testResult as arguments
-  function buildAndTest(testFunc) {
-    return project.build()
-      .then(extractJscsViolations)
-      .then(testFunc);
-  }
-
   describe('when linting a single copied JS asset', function () {
     it('default configuration produces no warnings ' +
        'for correct (but ugly) code',
        function () {
          project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
 
-         return buildAndTest(function (violations) {
+         return buildAndTest(project, function (violations) {
            expect(violations).toEqual([]);
          });
        });
@@ -58,7 +37,7 @@ describe('node-jscs', function () {
        function () {
          project.files.assets.javascripts['main.js'] = 'malformed code';
 
-         return buildAndTest(function (violations) {
+         return buildAndTest(project, function (violations) {
            expect(violations).toNotEqual([]);
          });
        });
@@ -68,7 +47,7 @@ describe('node-jscs', function () {
 
       project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
 
-      return buildAndTest(function (violations) {
+      return buildAndTest(project, function (violations) {
         expect(violations).toNotEqual([]);
       });
     });
@@ -78,7 +57,7 @@ describe('node-jscs', function () {
 
       project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
 
-      return buildAndTest(function (violations) {
+      return buildAndTest(project, function (violations) {
         expect(violations.length).toBe(1);
       });
     });
@@ -145,15 +124,9 @@ describe('node-jscs', function () {
 
         // Build and check warnings to see that the expected set of
         // files where linted
-        return buildAndTest(function (violations) {
-          params.expectedLintedFiles.forEach(function (file) {
-            var linted;
-            violations.forEach(function (violation) {
-              linted || (linted = violation.indexOf(file) !== -1);
-            });
-
-            expect(linted).toBe(true, 'expected file "' + file +
-                                '" to be linted and produce one violation');
+        return buildAndTest(project, function (violations) {
+          params.expectedLintedFiles.forEach(function (fileName) {
+            expectViolationsInFile(violations, fileName);
           });
 
           expect(violations.length).toBe(params.expectedLintedFiles.length);
@@ -161,4 +134,74 @@ describe('node-jscs', function () {
       });
     });
   });
+
+  describe('files can be excluded from linting', function () {
+    it('using a string', function () {
+      project.mimosaConfig.jscs = {
+        exclude: ['javascripts/to-be-excluded.js'],
+        rules: {
+          requireLineFeedAtFileEnd: true
+        }
+      };
+      project.files.assets.javascripts['to-be-excluded.js'] = 'x=1;"ugly code"';
+      project.files.assets.javascripts['to-not-be-excluded.js'] =
+        'x=1;"ugly code"';
+
+      return buildAndTest(project, function (violations) {
+        expectViolationsInFile(violations, 'to-not-be-excluded.js');
+        expect(violations.length).toEqual(1);
+      });
+    });
+
+    it('using a regex', function () {
+      project.mimosaConfig.jscs = {
+        exclude: [/to-be-excluded/],
+        rules: {
+          requireLineFeedAtFileEnd: true
+        }
+      };
+      project.files.assets.javascripts['to-be-excluded.js'] = 'x=1;"ugly code"';
+      project.files.assets.javascripts['to-not-be-excluded.js'] =
+        'x=1;"ugly code"';
+
+      return buildAndTest(project, function (violations) {
+        expectViolationsInFile(violations, 'to-not-be-excluded.js');
+        expect(violations.length).toEqual(1);
+      });
+    });
+  });
 });
+
+// Helper function that builds and invokes a test function with
+// violations, testResult as arguments
+function buildAndTest(project, testFunc) {
+  return project.build()
+    .then(extractJscsViolations)
+    .then(testFunc);
+}
+
+// Helper function that, given a MimosaProject build result, returns
+// a resolved promise with an array of JSCS violations. Intended for
+// chaining after MimosaProject.build to get easy access to
+// violations.
+function extractJscsViolations(buildResult) {
+  var violations = [];
+  buildResult.warnings.forEach(function (warning) {
+    warning.message.indexOf('JSCS Error:') === 0 &&
+      violations.push(warning.message);
+  });
+  return Promise.resolve(violations, buildResult);
+}
+
+// Helper functions that fails the test if the list of violations
+// does not mention a particular file
+function expectViolationsInFile(violations, fileName, msg) {
+  var violationFound;
+  violations.forEach(function (violation) {
+    violationFound || (violationFound = violation.indexOf(fileName) !== -1);
+  });
+
+  msg || (msg = 'expected file "' + fileName +
+          '" to be linted and produce violations');
+  expect(violationFound).toBe(true, msg);
+}
