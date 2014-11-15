@@ -11,6 +11,7 @@ var fs = Promise.promisifyAll(require('fs'));
 var childProcess = Promise.promisifyAll(require('child_process'));
 var temp = Promise.promisifyAll(require('temp')).track();
 var stripAnsi = require('strip-ansi');
+var util = require('util');
 
 module.exports = MimosaProject;
 
@@ -145,7 +146,7 @@ MimosaProject.prototype.createProjectFiles = function () {
   if (!this.promises.createProjectFiles) {
     if (!this.files['mimosa-config.js']) {
       this.files['mimosa-config.js'] = 'exports.config = \n' +
-        JSON.stringify(this.mimosaConfig, undefined, 2);
+        util.inspect(this.mimosaConfig, { depth: null });
     }
 
     this.promises.createProjectFiles = this.createRootDir()
