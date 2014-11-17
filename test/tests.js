@@ -1,6 +1,6 @@
 var path = require('path');
-var assert = require('assert');
 var expect = require('expect');
+var util = require('util');
 var Promise = require('bluebird');
 var MimosaProject = require('./MimosaProject');
 
@@ -167,6 +167,43 @@ describe('node-jscs', function () {
       return buildAndTest(project, function (violations) {
         expectViolationsInFile(violations, 'to-not-be-excluded.js');
         expect(violations.length).toEqual(1);
+      });
+    });
+  });
+
+  describe('does not allow a malformed configuration', function () {
+    [
+      {
+        desc: 'where config.jscs is not an object',
+        config: []
+      },
+      {
+        desc: 'where config.jcsc.compiled is not a boolean',
+        config: { compiled: 'true' }
+      },
+      {
+        desc: 'where config.jcsc.copied is not a boolean',
+        config: { copied: 'true' }
+      },
+      {
+        desc: 'where config.jcsc.vendor is not a boolean',
+        config: { vendor: 'true' }
+      },
+      {
+        desc: 'where config.jcsc.rules is not an object',
+        config: { rules: [] }
+      }
+    ].forEach(function (data) {
+      it(data.desc, function () {
+        project.mimosaConfig.jscs = data.config;
+
+        return project.build()
+          .then(function () {
+            throw new Error('Build successful despite maformed JSCS config: ' +
+                            util.inspect(data.config, { depth: null }));
+          }).error(function () {
+            // Expected (build should fail)
+          });
       });
     });
   });
