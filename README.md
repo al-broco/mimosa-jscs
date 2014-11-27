@@ -68,16 +68,15 @@ external files not part of the Mimosa project.
 
 `mimosa-jscs` reads configuration files the same way as JSCS does,
 which means that the file format is determined from the file name:
-* If the file extension is `.js` or `.json`, the file is read using
-Node's
-[`require`](http://nodejs.org/api/modules.html#modules_file_modules). Special
-case: if the file name is `package.json`, the file is read using
-`require` and the configuration is taken from a property called
-`jscsConfig`.
-* Otherwise the file is treated as commented JSON. Comments are
-stripped using
-[strip-json-comments](https://www.npmjs.org/package/strip-json-comments)
-and then a JSON parser is used to read the file.
+* If the file extension is `.js` the file is read as a [Node
+  module](http://nodejs.org/api/modules.html) using Node's require.
+* If the file name is `package.json` the file is standard JSON and the
+  configuration is in a property called `jscsConfig`.
+* If the file name is anything else with the extension `.json` the
+  file is standard JSON.
+* Otherwise the file is commented JSON. Comments are standard
+  Javascript comments and are stripped using
+  [strip-json-comments](https://www.npmjs.org/package/strip-json-comments).
 
 Both `configFile` and `rules` can be specified at the same time. In
 that case the configuration passed to JSCS will be the configuration
