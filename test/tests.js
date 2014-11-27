@@ -207,6 +207,58 @@ describe('node-jscs', function () {
       });
     });
   });
+
+  describe('can load a configuration from a file', function () {
+    ['.jscsrc', '.jscs.json'].forEach(function (fileName) {
+      it('with name ' + fileName + ' containing JSON', function () {
+        project.mimosaConfig.jscs = { configFile: fileName };
+
+        project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+        project.files[fileName] = '{ "preset": "crockford" }';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations).toNotEqual([]);
+        });
+      });
+    });
+
+    it('with name .jscsrc containing commented JSON', function () {
+      project.mimosaConfig.jscs = { configFile: '.jscsrc' };
+
+      project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+      project.files['.jscsrc'] =
+        '{ // ...\n"preset": /* ... */ "crockford" }';
+
+      return buildAndTest(project, function (violations) {
+        expect(violations).toNotEqual([]);
+      });
+    });
+
+    it('with name config.js containing a node module', function () {
+      project.mimosaConfig.jscs = { configFile: 'config.js' };
+
+      project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+      project.files['config.js'] =
+        'module.exports = { preset: "crockford" }';
+
+      return buildAndTest(project, function (violations) {
+        expect(violations).toNotEqual([]);
+      });
+    });
+
+    it('with name package.json containing JSON with the configuration ' +
+       'in a property jscsConfig', function () {
+      project.mimosaConfig.jscs = { configFile: 'package.json' };
+
+      project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+      project.files['package.json'] =
+        '{ "jscsConfig": { "preset": "crockford" } }';
+
+      return buildAndTest(project, function (violations) {
+        expect(violations).toNotEqual([]);
+      });
+    });
+  });
 });
 
 // Helper function that builds and invokes a test function with
