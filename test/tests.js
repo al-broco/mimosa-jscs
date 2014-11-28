@@ -259,6 +259,42 @@ describe('node-jscs', function () {
       });
     });
   });
+
+  describe('when configuring with both a file and a mimosa config property',
+           function () {
+    it('the used configuration is a combination of the two', function () {
+      project.mimosaConfig.jscs = {
+        configFile: '.jscsrc',
+        rules: {
+          disallowMultipleVarDecl: true
+        }
+      };
+      project.files['.jscsrc'] = '{ "requireLineFeedAtFileEnd": true }';
+      project.files.assets.javascripts['file1.js'] = '// no line feed';
+      project.files.assets.javascripts['file2.js'] = 'var x, y;\n';
+
+      return buildAndTest(project, function (violations) {
+        expectViolationsInFile(violations, 'file1.js');
+        expectViolationsInFile(violations, 'file2.js');
+        expect(violations.length).toEqual(2);
+      });
+    });
+
+    it('the mimosa config property overrides the file', function () {
+      project.mimosaConfig.jscs = {
+        configFile: '.jscsrc',
+        rules: {
+          preset: null
+        }
+      };
+      project.files['.jscsrc'] = '{ "preset": "crockford" }';
+      project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+
+      return buildAndTest(project, function (violations) {
+        expect(violations).toEqual([]);
+      });
+    });
+  });
 });
 
 // Helper function that builds and invokes a test function with
