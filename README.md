@@ -7,8 +7,6 @@ code using [JSCS](https://github.com/jscs-dev/node-jscs).
 Note: `mimosa-jscs` is not a part of Mimosa and it is not maintained by the
 Mimosa maintainers.
 
-This module is in early development and not yet in a releasable state.
-
 Installation
 ------------
 
