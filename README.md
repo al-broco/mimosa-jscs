@@ -10,12 +10,9 @@ Mimosa maintainers.
 Installation
 ------------
 
-`mimosa-jscs` is not in the npm registry so it must be installed from
-github. In the root directory of your project, type:
-
-    npm install --save-dev "al-broco/mimosa-jscs"
-
-Next, add `jscs` to your project's list of modules.
+Add `jscs` to your Mimosa project's list of modules and build the
+project. This will download the latest version of `mimosa-jscs` from
+[npmjs.org](https://www.npmjs.org/package/mimosa-jscs).
 
 Configuration
 -------------
