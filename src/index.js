@@ -135,10 +135,7 @@ function shouldProcessFile(mimosaConfig, file) {
  * Returns true if a file should be excluded based on file name
  * according to the module configuration.
  */
-function isFileExcludedBasedOnName(moduleConfig,
-                                   absolutePath,
-                                   relativePath)
-{
+function isFileExcludedBasedOnName(moduleConfig, absolutePath, relativePath) {
   // Note that config validation has modified moduleConfig.exlude and
   // create moduleConfig.excludeRegex
   if ((moduleConfig.exclude || []).indexOf(absolutePath) !== -1) {
