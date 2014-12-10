@@ -4,9 +4,6 @@ mimosa-jscs
 This is a [Mimosa](http://mimosa.io) module for linting Javascript
 code using [JSCS](https://github.com/jscs-dev/node-jscs).
 
-Note: `mimosa-jscs` is not a part of Mimosa and it is not maintained by the
-Mimosa maintainers.
-
 Installation
 ------------
 
