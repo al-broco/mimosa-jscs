@@ -12,8 +12,7 @@ exports.defaults = function () {
       exclude: [],
       compiled: true,
       copied: true,
-      vendor: false,
-      rules: { },
+      vendor: false
     }
   };
 };
@@ -75,16 +74,22 @@ exports.validate = function (config, validators) {
       validators.ifExistsIsBoolean(errors, 'jscs.' + type, config.jscs[type]);
     });
 
-    if (!validators.ifExistsIsObject(errors, 'jscs.rules', config.jscs.rules)) {
-      // Make sure jscs.rules exists and is an object
-      config.jscs.rules = { };
-    }
-
     var configFileExists = ifExistsIsFile(validators,
                                           errors,
                                           'jscs.configFile',
                                           config.jscs.configFile,
                                           config.root);
+
+    if (!configFileExists && !config.jscs.rules) {
+      logger.warn('Neither JSCS rules or JSCS config file specified, JSCS ' +
+                  'will check for syntax errors only');
+    }
+
+    if (!validators.ifExistsIsObject(errors, 'jscs.rules', config.jscs.rules)) {
+      // Make sure jscs.rules exists and is an object
+      config.jscs.rules = { };
+    }
+
     if (configFileExists) {
       // Merge property from config file into rules property, rules
       // properties overriding config file properties

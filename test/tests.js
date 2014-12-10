@@ -4,7 +4,7 @@ var util = require('util');
 var Promise = require('bluebird');
 var MimosaProject = require('./MimosaProject');
 
-describe('node-jscs', function () {
+describe('mimosa-jscs', function () {
   var project;
 
   beforeEach(function () {
@@ -22,7 +22,7 @@ describe('node-jscs', function () {
   });
 
   describe('when linting a single copied JS asset', function () {
-    it('default configuration produces no warnings ' +
+    it('default configuration reports no violations ' +
        'for correct (but ugly) code',
        function () {
          project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
@@ -32,7 +32,7 @@ describe('node-jscs', function () {
          });
        });
 
-    it('default configuration produces warnings ' +
+    it('default configuration reports violations ' +
        'for malformed code',
        function () {
          project.files.assets.javascripts['main.js'] = 'malformed code';
@@ -305,6 +305,40 @@ describe('node-jscs', function () {
       return buildAndTest(project, function (violations) {
         expect(violations).toEqual([]);
       });
+    });
+  });
+
+  describe('when having an empty configuration', function () {
+    it('a warning is logged if neither rules nor configFile is set',
+       function () {
+         project.mimosaConfig.jscs = { };
+
+         return project.build()
+           .then(function (buildResult) {
+             expect(buildResult.warnings.length).toBe(1);
+             expect(buildResult.warnings[0].text).toMatch(
+                 /Neither JSCS rules or JSCS config file specified/);
+           });
+       });
+
+    it('no warning is logged if rules option set to an empty object',
+       function () {
+         project.mimosaConfig.jscs = { rules: { } };
+
+         return project.build()
+           .then(function (buildResult) {
+             expect(buildResult.warnings.length).toBe(0);
+           });
+       });
+
+    it('no warning is logged if configFile options is set', function () {
+      project.mimosaConfig.jscs = { configFile: '.jscsrc' };
+      project.files['.jscsrc'] = '{}';
+
+      return project.build()
+        .then(function (buildResult) {
+          expect(buildResult.warnings.length).toBe(0);
+        });
     });
   });
 });
