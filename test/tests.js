@@ -192,6 +192,18 @@ describe('node-jscs', function () {
       {
         desc: 'where config.jcsc.rules is not an object',
         config: { rules: [] }
+      },
+      {
+        desc: 'where config.jcsc.exclude is not an array',
+        config: { exclude: true }
+      },
+      {
+        desc: 'where config.jcsc.configFile is not a string',
+        configFile: true
+      },
+      {
+        desc: 'where config.jcsc.configFile is not an existing file',
+        configFile: 'nothing.json'
       }
     ].forEach(function (data) {
       it(data.desc, function () {
@@ -199,7 +211,7 @@ describe('node-jscs', function () {
 
         return project.build()
           .then(function () {
-            throw new Error('Build successful despite maformed JSCS config: ' +
+            throw new Error('Build successful despite malformed JSCS config: ' +
                             util.inspect(data.config, { depth: null }));
           }).error(function () {
             // Expected (build should fail)
