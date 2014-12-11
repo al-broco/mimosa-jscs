@@ -2,7 +2,7 @@ mimosa-jscs
 ===========
 
 This is a [Mimosa](http://mimosa.io) module for linting Javascript
-code using [JSCS](https://github.com/jscs-dev/node-jscs).
+code using [JSCS](https://github.com/jscs-dev/node-jscs/tree/v1.7.3).
 
 Installation
 ------------
@@ -37,26 +37,26 @@ options work just like the corresponding options for the
 The `jscs.configFile` and `jscs.rules` controls JSCS linting, which
 rules are enabled and how they are configured. JSCS configuration
 options are described in detail in [the JSCS
-documentation](https://github.com/jscs-dev/node-jscs#options). Currently,
-the only options supported are
-[`preset`](https://github.com/jscs-dev/node-jscs#preset) and
-[configuration of individual
-rules](https://github.com/jscs-dev/node-jscs#rules). Other options
-(such as
-[`excludeFiles`](https://github.com/jscs-dev/node-jscs#excludefiles)
+documentation](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#options).
+Currently, the only options supported are
+[`preset`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#preset)
+and [configuration of individual
+rules](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#rules). Other
+options (such as
+[`excludeFiles`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#excludefiles)
 and
-[`fileExtensions`](https://github.com/jscs-dev/node-jscs#fileextensions))
+[`fileExtensions`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#fileextensions))
 may be supported in the future.
 
 `jscs.configFile` is the file name of a JSCS configuration file,
 absolute or relative to the project's root. In contrast to [running
 JSCS from the command
-line](https://github.com/jscs-dev/node-jscs#--config), `mimosa-jscs`
-will not search other directories outside of your project for a
-configuration file. In particular, it wll not search your home
-directory or the project directory's ancestors for a file named
-`.jscsrc` or `.jscs.json`. This is to make building independent of
-external files not part of the Mimosa project.
+line](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#cli),
+`mimosa-jscs` will not search other directories outside of your
+project for a configuration file. In particular, it wll not search
+your home directory or the project directory's ancestors for a file
+named `.jscsrc` or `.jscs.json`. This is to make building independent
+of external files not part of the Mimosa project.
 
 `mimosa-jscs` reads configuration files the same way as JSCS does,
 which means that the file format is determined from the file name:
@@ -99,8 +99,8 @@ preset and also check that all comments starts with a capital letter:
     }
 
 To disable a rule, set it to `null` (this is [standard JSCS
-behavior](https://github.com/jscs-dev/node-jscs#example-1)). The
-following configration will lint using the Crockford preset but
+behavior](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#example-1)).
+The following configration will lint using the Crockford preset but
 disable indentation checking:
 
     jscs: {
