@@ -10,9 +10,14 @@ function registration (mimosaConfig, register) {
 
   var extensions = getFileExtensions(mimosaConfig);
   if (extensions.length > 0) {
-    register(['buildFile', 'add', 'update'],
+    register(['buildFile'],
              'afterCompile',
-             onMimosaWorkflowCallback, extensions);
+             onMimosaBuildWorkflowCallback,
+             extensions);
+    register(['add', 'update'],
+             'afterCompile',
+             onMimosaWatchWorkflowCallback,
+             extensions);
   }
 }
 
@@ -37,10 +42,29 @@ function getFileExtensions(mimosaConfig) {
 }
 
 /**
- * Called by Mimosa when the module should act, see Mimosa doc for
- * details.
+ * Called by Mimosa when the module should act during a build, see
+ * Mimosa doc for details.
  */
-function onMimosaWorkflowCallback(mimosaConfig, options, next) {
+function onMimosaBuildWorkflowCallback(mimosaConfig, options, next) {
+  mimosaWorkflowLintFiles(mimosaConfig, options, next);
+}
+
+/**
+ * Called by Mimosa when the module should act during watch, see
+ * Mimosa doc for details.
+ */
+function onMimosaWatchWorkflowCallback(mimosaConfig, options, next) {
+  // Force a new JSCS instance to be created. This will reset the
+  // errors counter so that JSCS does not stop reporting if maxErrors
+  // is reached if a file is linted again and again
+  unloadJscs();
+  mimosaWorkflowLintFiles(mimosaConfig, options, next);
+}
+
+/**
+ * Lints files passed to the module as a Mimosa workflow step.
+ */
+function mimosaWorkflowLintFiles(mimosaConfig, options, next) {
   if (shouldProcessFilesBasedOnOptions(mimosaConfig.jscs, options)) {
     processFiles(mimosaConfig, options.files);
   } else {
@@ -185,7 +209,9 @@ function createErrorMessage(fileName, message, lineNumber, columnNumber) {
 }
 
 /**
- * Returns a JSCS instance, loading and configuring it if necessary.
+ * Returns a JSCS instance, loading and configuring it if
+ * necessary. Calling this function repeatedly will return the same
+ * instance, reusing it. unloadJscs can be used to trigger a reload.
  */
 function loadJscs(moduleConfig) {
   if (!jscs) {
@@ -194,6 +220,13 @@ function loadJscs(moduleConfig) {
     jscs.configure(moduleConfig.rules);
   }
   return jscs;
+}
+
+/**
+ * Discards any jscs instance loaded by loadJscs.
+ */
+function unloadJscs() {
+  jscs = undefined;
 }
 
 module.exports = {

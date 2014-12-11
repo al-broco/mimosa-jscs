@@ -38,12 +38,16 @@ The `jscs.configFile` and `jscs.rules` controls JSCS linting, which
 rules are enabled and how they are configured. JSCS configuration
 options are described in detail in [the JSCS
 documentation](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#options).
-Currently, the only options supported are
-[`preset`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#preset)
-and [configuration of individual
-rules](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#rules). Other
-options (such as
-[`excludeFiles`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#excludefiles)
+The following options are supported:
+
+* [`preset`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#preset).
+* [Individual rules](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#rules).
+* [maxErrors](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#maxerrors). In
+  build mode, `maxErrors` is the maximum number of reported violations
+  per build. In watch mode, `maxErrors` is per file.
+
+Other options (such as
+[`excludeFiles`](https://github.com/jscs-dev/node-jscs#excludefiles)
 and
 [`fileExtensions`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#fileextensions))
 may be supported in the future.

@@ -354,6 +354,41 @@ describe('mimosa-jscs', function () {
         });
     });
   });
+
+  describe('maxErrors option', function () {
+    it('limits the number of violations reported', function () {
+      project.mimosaConfig.jscs = {
+        rules: {
+          requireLineFeedAtFileEnd: true,
+          disallowDanglingUnderscores: true,
+          maxErrors: 1
+        }
+      };
+
+      project.files.assets.javascripts['main.js'] = 'var _foo;';
+
+      return buildAndTest(project, function (violations) {
+        expect(violations.length).toBe(1);
+      });
+    });
+
+    it('in build mode applies per project and not per file', function () {
+      project.mimosaConfig.jscs = {
+        rules: {
+          requireLineFeedAtFileEnd: true,
+          disallowDanglingUnderscores: true,
+          maxErrors: 1
+        }
+      };
+
+      project.files.assets.javascripts['file1.js'] = 'var _foo;';
+      project.files.assets.javascripts['file2.js'] = 'var _foo;';
+
+      return buildAndTest(project, function (violations) {
+        expect(violations.length).toBe(1);
+      });
+    });
+  });
 });
 
 // Helper function that builds and invokes a test function with
