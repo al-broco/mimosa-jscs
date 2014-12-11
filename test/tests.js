@@ -59,6 +59,7 @@ describe('mimosa-jscs', function () {
 
       return buildAndTest(project, function (violations) {
         expect(violations.length).toBe(1);
+        expect(violations[0]).toMatch(/Missing line feed/);
       });
     });
   });
@@ -130,6 +131,9 @@ describe('mimosa-jscs', function () {
           });
 
           expect(violations.length).toBe(params.expectedLintedFiles.length);
+          violations.forEach(function (violation) {
+            expect(violation).toMatch(/Invalid dangling underscore/);
+          });
         });
       });
     });
@@ -150,6 +154,7 @@ describe('mimosa-jscs', function () {
       return buildAndTest(project, function (violations) {
         expectViolationsInFile(violations, 'to-not-be-excluded.js');
         expect(violations.length).toEqual(1);
+        expect(violations[0]).toMatch(/Missing line feed/);
       });
     });
 
@@ -167,6 +172,7 @@ describe('mimosa-jscs', function () {
       return buildAndTest(project, function (violations) {
         expectViolationsInFile(violations, 'to-not-be-excluded.js');
         expect(violations.length).toEqual(1);
+        expect(violations[0]).toMatch(/Missing line feed/);
       });
     });
   });
@@ -225,11 +231,12 @@ describe('mimosa-jscs', function () {
       it('with name ' + fileName + ' containing JSON', function () {
         project.mimosaConfig.jscs = { configFile: fileName };
 
-        project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
-        project.files[fileName] = '{ "preset": "crockford" }';
+        project.files.assets.javascripts['main.js'] = '// no line feed';
+        project.files[fileName] = '{ "requireLineFeedAtFileEnd": true }';
 
         return buildAndTest(project, function (violations) {
-          expect(violations).toNotEqual([]);
+          expect(violations.length).toEqual(1);
+          expect(violations[0]).toMatch(/Missing line feed/);
         });
       });
     });
@@ -237,21 +244,22 @@ describe('mimosa-jscs', function () {
     it('with name .jscsrc containing commented JSON', function () {
       project.mimosaConfig.jscs = { configFile: '.jscsrc' };
 
-      project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+      project.files.assets.javascripts['main.js'] = '// no line feed';
       project.files['.jscsrc'] =
-        '{ // ...\n"preset": /* ... */ "crockford" }';
+        '{ // ...\n "requireLineFeedAtFileEnd": /* ... */ true }';
 
       return buildAndTest(project, function (violations) {
-        expect(violations).toNotEqual([]);
+        expect(violations.length).toEqual(1);
+        expect(violations[0]).toMatch(/Missing line feed/);
       });
     });
 
     it('with name config.js containing a node module', function () {
       project.mimosaConfig.jscs = { configFile: 'config.js' };
 
-      project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+      project.files.assets.javascripts['main.js'] = '// no line feed';
       project.files['config.js'] =
-        'module.exports = { preset: "crockford" }';
+        'module.exports = { requireLineFeedAtFileEnd: true }';
 
       return buildAndTest(project, function (violations) {
         expect(violations).toNotEqual([]);
@@ -262,9 +270,9 @@ describe('mimosa-jscs', function () {
        'in a property jscsConfig', function () {
       project.mimosaConfig.jscs = { configFile: 'package.json' };
 
-      project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+      project.files.assets.javascripts['main.js'] = '// no line feed';
       project.files['package.json'] =
-        '{ "jscsConfig": { "preset": "crockford" } }';
+        '{ "jscsConfig": { "requireLineFeedAtFileEnd": true } }';
 
       return buildAndTest(project, function (violations) {
         expect(violations).toNotEqual([]);
@@ -289,6 +297,11 @@ describe('mimosa-jscs', function () {
         expectViolationsInFile(violations, 'file1.js');
         expectViolationsInFile(violations, 'file2.js');
         expect(violations.length).toEqual(2);
+        var file1ViolationIdx =
+              violations[0].indexOf('file1.js') !== -1 ? 0 : 1;
+        var file2ViolationIdx = 1 - file1ViolationIdx;
+        expect(violations[file1ViolationIdx]).toMatch(/Missing line feed/);
+        expect(violations[file2ViolationIdx]).toMatch(/Multiple var decl/);
       });
     });
 
