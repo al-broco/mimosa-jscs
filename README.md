@@ -38,7 +38,7 @@ To configure JSCS, set either the `jscs.rules` property, the
 `jscs.configFile` property, or both. JSCS configuration options are
 described in detail in [the JSCS
 documentation](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#options). For
-example, adding the following to your mimosa config will make JSCS
+example, adding the following to your Mimosa config will make JSCS
 check that files end with a newline:
 
     jscs: {
@@ -51,21 +51,24 @@ check that files end with a newline:
 its contents. The following configuration options have been verified
 to work:
 
-* [`preset`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#preset).
 * [Individual rules](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#rules).
-* [maxErrors](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#maxerrors). In
+* [`preset`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#preset).
+* [`additionalRules`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#additionalrules).
+  Rule paths are relative to the project root.
+* [`excludeFiles`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#excludefiles).
+  In addition to the `jscs.exclude` property described above,
+  `mimosa-jscs` also supports excluding files using `excludeFiles` in
+  the JSCS configuration. This can come in handy if you want to share
+  a JSCS configuration file between Mimosa and (for instance) an
+  editor or IDE. Paths are relative to the project root.
+* [`maxErrors`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#maxerrors). In
   build mode, `maxErrors` is the maximum number of reported violations
   per build. In watch mode, `maxErrors` is per file.
-* [esnext](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#esnext).
-* [additionalRules](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#additionalrules).
-  Rule paths are relative to the project root.
+* [`esnext`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#esnext).
 
-Options that affect which files are linted
-([`excludeFiles`](https://github.com/jscs-dev/node-jscs#excludefiles)
-and
-[`fileExtensions`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#fileextensions))
-are currently ignored, use `jscs.exclude` to exclude files from
-linting.
+The option
+[`fileExtensions`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#fileextensions)
+is currently ignored.
 
 `jscs.configFile` is the file name of a JSCS configuration file,
 absolute or relative to the project's root. In contrast to [running

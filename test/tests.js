@@ -175,6 +175,42 @@ describe('mimosa-jscs', function () {
         expect(violations[0]).toMatch(/Missing line feed/);
       });
     });
+
+    describe('using the JSCS excludeFiles option', function () {
+      it('matching a file name exactly', function () {
+        project.mimosaConfig.jscs = {
+          rules: {
+            excludeFiles: ['javascripts/to-be-excluded.js'],
+            requireLineFeedAtFileEnd: true
+          }
+        };
+        project.files.assets.javascripts['to-be-excluded.js'] =
+          '// No line feed';
+        project.files.assets.javascripts['to-not-be-excluded.js'] =
+          '// No line feed';
+
+        return buildAndTest(project, function (violations) {
+          expectViolationsInFile(violations, 'to-not-be-excluded.js');
+          expect(violations.length).toBe(1);
+          expect(violations[0]).toMatch(/Missing line feed/);
+        });
+      });
+
+      it('matching using wildcards', function () {
+        project.mimosaConfig.jscs = {
+          rules: {
+            excludeFiles: ['**/*.js'],
+            requireLineFeedAtFileEnd: true
+          }
+        };
+        project.files.assets.javascripts['file1.js'] = '// No line feed';
+        project.files.assets.javascripts['file2.js'] = '// No line feed';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations).toEqual([]);
+        });
+      });
+    });
   });
 
   describe('does not allow a malformed configuration', function () {

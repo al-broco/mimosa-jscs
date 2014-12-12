@@ -1,6 +1,7 @@
 'use strict';
 
 var path = require('path');
+var minimatch = require('minimatch');
 var config = require('./config');
 var jscs;
 var logger;
@@ -160,19 +161,34 @@ function shouldProcessFile(mimosaConfig, file) {
  * according to the module configuration.
  */
 function isFileExcludedBasedOnName(moduleConfig, absolutePath, relativePath) {
-  // Note that config validation has modified moduleConfig.exlude and
+  // Note that config validation has modified moduleConfig.exclude and
   // create moduleConfig.excludeRegex
   if ((moduleConfig.exclude || []).indexOf(absolutePath) !== -1) {
+    logger.debug('Not JSCS linting [[ ' + absolutePath +
+                 ' ]] because a string match was found in jscs.exclude');
     return true;
   }
 
   if (moduleConfig.excludeRegex &&
       relativePath.match(moduleConfig.excludeRegex))
   {
+    logger.debug('Not JSCS linting [[ ' + absolutePath +
+                 ' ]] because a regex match was found in jscs.exclude');
     return true;
   }
 
-  return false;
+  var match = false;
+  moduleConfig.excludeGlobs && moduleConfig.excludeGlobs.forEach(
+    function (glob) {
+      if (minimatch(relativePath, glob)) {
+        match ||
+          logger.debug('Not JSCS linting [[ ' + absolutePath +
+                       ' ]] because it matches ' + glob +
+                       ' from JSCS config excludeFiles');
+        match = true;
+      }
+    });
+  return match;
 }
 
 /**

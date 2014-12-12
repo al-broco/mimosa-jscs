@@ -99,6 +99,13 @@ exports.validate = function (config, validators) {
           (config.jscs.rules[property] = jscsConfig[property]);
       }
     }
+
+    if (validators.ifExistsIsArray(errors,
+                                   'excludeFiles in JSCS config',
+                                   config.jscs.rules.excludeFiles))
+    {
+      config.jscs.excludeGlobs = config.jscs.rules.excludeFiles;
+    }
   }
 
   return errors;
