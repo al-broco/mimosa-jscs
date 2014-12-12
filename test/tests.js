@@ -389,6 +389,20 @@ describe('mimosa-jscs', function () {
       });
     });
   });
+
+  it('esnext option enables ES6 parsing', function () {
+    project.mimosaConfig.jscs = {
+      rules: {
+        esnext: true
+      }
+    };
+
+    project.files.assets.javascripts['main.js'] = 'class Foo {} // ES6';
+
+    return buildAndTest(project, function (violations) {
+      expect(violations).toEqual([]);
+    });
+  });
 });
 
 // Helper function that builds and invokes a test function with
