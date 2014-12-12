@@ -21,8 +21,8 @@ describe('mimosa-jscs', function () {
     return setup().catch(setup).catch(setup);
   });
 
-  describe('when linting a single copied JS asset', function () {
-    it('default configuration reports no violations ' +
+  describe('linting a single copied JS asset', function () {
+    it('with default configuration reports no violations ' +
        'for correct (but ugly) code',
        function () {
          project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
@@ -32,7 +32,7 @@ describe('mimosa-jscs', function () {
          });
        });
 
-    it('default configuration reports violations ' +
+    it('with default configuration reports violations ' +
        'for malformed code',
        function () {
          project.files.assets.javascripts['main.js'] = 'malformed code';
@@ -42,20 +42,20 @@ describe('mimosa-jscs', function () {
          });
        });
 
-    it('a preset can be used to enable rules', function () {
+    it('can lint using a preset', function () {
       project.mimosaConfig.jscs = { rules: { preset: 'crockford' } };
 
-      project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+      project.files.assets.javascripts['main.js'] = 'x=1';
 
       return buildAndTest(project, function (violations) {
         expect(violations).toNotEqual([]);
       });
     });
 
-    it('a rule can be individually enabled', function () {
+    it('can lint using an individually enabled rule', function () {
       project.mimosaConfig.jscs = { rules: { requireLineFeedAtFileEnd: true } };
 
-      project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+      project.files.assets.javascripts['main.js'] = '// No line feed';
 
       return buildAndTest(project, function (violations) {
         expect(violations.length).toBe(1);
@@ -64,7 +64,7 @@ describe('mimosa-jscs', function () {
     });
   });
 
-  describe('when linting a project with a JS file, a coffeescript file, ' +
+  describe('linting a project with a JS file, a coffeescript file, ' +
            'a vendor JS file, and a vendor coffeescript file',
            function ()
   {
@@ -93,7 +93,7 @@ describe('mimosa-jscs', function () {
       { compiled: true, copied: true, vendor: true,
         expectedLintedFiles: ['copied.js',
                               'compiled.coffee',
-                              'copied-vendor.js'] },
+                              'copied-vendor.js'] }
     ].forEach(function (params) {
       var count = params.expectedLintedFiles.length;
       var description =
@@ -139,7 +139,7 @@ describe('mimosa-jscs', function () {
     });
   });
 
-  describe('files can be excluded from linting', function () {
+  describe('can exclude files from linting', function () {
     it('using a string', function () {
       project.mimosaConfig.jscs = {
         exclude: ['javascripts/to-be-excluded.js'],
@@ -147,13 +147,13 @@ describe('mimosa-jscs', function () {
           requireLineFeedAtFileEnd: true
         }
       };
-      project.files.assets.javascripts['to-be-excluded.js'] = 'x=1;"ugly code"';
+      project.files.assets.javascripts['to-be-excluded.js'] = '// No line feed';
       project.files.assets.javascripts['to-not-be-excluded.js'] =
-        'x=1;"ugly code"';
+        '// No line feed';
 
       return buildAndTest(project, function (violations) {
         expectViolationsInFile(violations, 'to-not-be-excluded.js');
-        expect(violations.length).toEqual(1);
+        expect(violations.length).toBe(1);
         expect(violations[0]).toMatch(/Missing line feed/);
       });
     });
@@ -165,13 +165,13 @@ describe('mimosa-jscs', function () {
           requireLineFeedAtFileEnd: true
         }
       };
-      project.files.assets.javascripts['to-be-excluded.js'] = 'x=1;"ugly code"';
+      project.files.assets.javascripts['to-be-excluded.js'] = '// No line feed';
       project.files.assets.javascripts['to-not-be-excluded.js'] =
-        'x=1;"ugly code"';
+        '// No line feed';
 
       return buildAndTest(project, function (violations) {
         expectViolationsInFile(violations, 'to-not-be-excluded.js');
-        expect(violations.length).toEqual(1);
+        expect(violations.length).toBe(1);
         expect(violations[0]).toMatch(/Missing line feed/);
       });
     });
@@ -235,7 +235,7 @@ describe('mimosa-jscs', function () {
         project.files[fileName] = '{ "requireLineFeedAtFileEnd": true }';
 
         return buildAndTest(project, function (violations) {
-          expect(violations.length).toEqual(1);
+          expect(violations.length).toBe(1);
           expect(violations[0]).toMatch(/Missing line feed/);
         });
       });
@@ -249,7 +249,7 @@ describe('mimosa-jscs', function () {
         '{ // ...\n "requireLineFeedAtFileEnd": /* ... */ true }';
 
       return buildAndTest(project, function (violations) {
-        expect(violations.length).toEqual(1);
+        expect(violations.length).toBe(1);
         expect(violations[0]).toMatch(/Missing line feed/);
       });
     });
@@ -280,7 +280,7 @@ describe('mimosa-jscs', function () {
     });
   });
 
-  describe('when configuring with both a file and a mimosa config property',
+  describe('when configured with both a file and a mimosa config property',
            function () {
     it('the used configuration is a combination of the two', function () {
       project.mimosaConfig.jscs = {
@@ -296,7 +296,7 @@ describe('mimosa-jscs', function () {
       return buildAndTest(project, function (violations) {
         expectViolationsInFile(violations, 'file1.js');
         expectViolationsInFile(violations, 'file2.js');
-        expect(violations.length).toEqual(2);
+        expect(violations.length).toBe(2);
         var file1ViolationIdx =
               violations[0].indexOf('file1.js') !== -1 ? 0 : 1;
         var file2ViolationIdx = 1 - file1ViolationIdx;
@@ -321,7 +321,7 @@ describe('mimosa-jscs', function () {
     });
   });
 
-  describe('when having an empty configuration', function () {
+  describe('when linting with an empty configuration', function () {
     it('a warning is logged if neither rules nor configFile is set',
        function () {
          project.mimosaConfig.jscs = { };
@@ -355,8 +355,8 @@ describe('mimosa-jscs', function () {
     });
   });
 
-  describe('maxErrors option', function () {
-    it('limits the number of violations reported', function () {
+  describe('supports the maxErrors option', function () {
+    it('which limits the number of violations reported', function () {
       project.mimosaConfig.jscs = {
         rules: {
           requireLineFeedAtFileEnd: true,
@@ -372,7 +372,7 @@ describe('mimosa-jscs', function () {
       });
     });
 
-    it('in build mode applies per project and not per file', function () {
+    it('which applies per project and not per file in build mode', function () {
       project.mimosaConfig.jscs = {
         rules: {
           requireLineFeedAtFileEnd: true,
@@ -390,7 +390,7 @@ describe('mimosa-jscs', function () {
     });
   });
 
-  it('esnext option enables ES6 parsing', function () {
+  it('supports the esnext option which enables ES6 parsing', function () {
     project.mimosaConfig.jscs = {
       rules: {
         esnext: true
@@ -404,7 +404,7 @@ describe('mimosa-jscs', function () {
     });
   });
 
-  describe('additionalRules option', function () {
+  describe('supports the additionalRules option', function () {
     // JS file that defines a rule that always reports one violation
     // with the description "Dummy error":
     var RULE_DEF_FILE_CONTENTS =
@@ -417,7 +417,7 @@ describe('mimosa-jscs', function () {
           '  }\n' +
           '};';
 
-    it('can be used to enable custom rules', function () {
+    it('which can be used to enable custom rules', function () {
       project.mimosaConfig.jscs = {
         rules: {
           additionalRules: ['rules/*.js'],
@@ -435,7 +435,7 @@ describe('mimosa-jscs', function () {
       });
     });
 
-    it('looks for rules relative to the project root', function () {
+    it('which specified paths relative to the project root', function () {
       // This test loads the config from a file and verifies that the
       // additionalRules path is still relative to the project root
       project.mimosaConfig.jscs = {
