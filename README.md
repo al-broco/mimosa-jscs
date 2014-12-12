@@ -46,6 +46,8 @@ The following options are supported:
   build mode, `maxErrors` is the maximum number of reported violations
   per build. In watch mode, `maxErrors` is per file.
 * [esnext](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#esnext).
+* [additionalRules](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#additionalrules).
+  Rule paths are relative to the project root.
 
 Other options (such as
 [`excludeFiles`](https://github.com/jscs-dev/node-jscs#excludefiles)

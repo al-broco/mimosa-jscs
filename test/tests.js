@@ -403,6 +403,60 @@ describe('mimosa-jscs', function () {
       expect(violations).toEqual([]);
     });
   });
+
+  describe('additionalRules option', function () {
+    // JS file that defines a rule that always reports one violation
+    // with the description "Dummy error":
+    var RULE_DEF_FILE_CONTENTS =
+          'module.exports = function() {};\n' +
+          'module.exports.prototype = {\n' +
+          '  configure: function() { },\n' +
+          '  getOptionName: function() { return "dummy"; },\n' +
+          '  check: function(file, errors) {\n' +
+          '    errors.add("Dummy error", 1, 0);\n' +
+          '  }\n' +
+          '};';
+
+    it('can be used to enable custom rules', function () {
+      project.mimosaConfig.jscs = {
+        rules: {
+          additionalRules: ['rules/*.js'],
+          dummy: true
+        }
+      };
+
+      project.files.rules = { 'dummy-rule.js': RULE_DEF_FILE_CONTENTS };
+
+      project.files.assets.javascripts['main.js'] = '// Empty file';
+
+      return buildAndTest(project, function (violations) {
+        expect(violations.length).toBe(1);
+        expect(violations[0]).toMatch(/Dummy error/);
+      });
+    });
+
+    it('looks for rules relative to the project root', function () {
+      // This test loads the config from a file and verifies that the
+      // additionalRules path is still relative to the project root
+      project.mimosaConfig.jscs = {
+        configFile: 'config/config.json'
+      };
+
+      project.files.rules = { 'dummy-rule.js': RULE_DEF_FILE_CONTENTS };
+
+      project.files.config = {
+        'config.json':
+          '{ "additionalRules": [ "rules/*.js" ], "dummy": true }'
+      };
+
+      project.files.assets.javascripts['main.js'] = '// Empty file';
+
+      return buildAndTest(project, function (violations) {
+        expect(violations.length).toBe(1);
+        expect(violations[0]).toMatch(/Dummy error/);
+      });
+    });
+  });
 });
 
 // Helper function that builds and invokes a test function with
