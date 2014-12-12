@@ -151,3 +151,16 @@ This module uses a version of JSCS compatible with 1.7.3.
 
 It has been tested with Mimosa version 2.3.17 but should work with
 other versions of Mimosa as well.
+
+Version history
+---------------
+
+* **[1.0.3](https://github.com/al-broco/mimosa-jscs/tree/v1.0.3)**
+  Support for the maxErrors option.
+* **[1.0.2](https://github.com/al-broco/mimosa-jscs/tree/v1.0.2)**
+  Warn if neither rules nor config file is configured.
+* **[1.0.1](https://github.com/al-broco/mimosa-jscs/tree/v1.0.1)**
+  Cosmetic changes.
+* **[1.0.0](https://github.com/al-broco/mimosa-jscs/tree/v1.0.0)**
+  First functional version. Runs JSCS, loads configuration from mimosa
+  config or file, configuration mimics mimosa-jshint.
