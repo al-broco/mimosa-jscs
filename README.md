@@ -34,11 +34,22 @@ Which files are linted are controlled by the `jscs.exclude`,
 options work just like the corresponding options for the
 [JSHint Mimosa plugin](http://mimosa.io/configuration.html#lint).
 
-The `jscs.configFile` and `jscs.rules` controls JSCS linting, which
-rules are enabled and how they are configured. JSCS configuration
-options are described in detail in [the JSCS
-documentation](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#options).
-The following options are supported:
+To configure JSCS, set either the `jscs.rules` property, the
+`jscs.configFile` property, or both. JSCS configuration options are
+described in detail in [the JSCS
+documentation](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#options). For
+example, adding the following to your mimosa config will make JSCS
+check that files end with a newline:
+
+    jscs: {
+      rules: {
+        requireLineFeedAtFileEnd: true
+      }
+    }
+
+`mimosa-jscs` will pass the configuration to JSCS without validating
+its contents. The following configuration options have been verified
+to work:
 
 * [`preset`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#preset).
 * [Individual rules](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#rules).
@@ -49,11 +60,12 @@ The following options are supported:
 * [additionalRules](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#additionalrules).
   Rule paths are relative to the project root.
 
-Other options (such as
-[`excludeFiles`](https://github.com/jscs-dev/node-jscs#excludefiles)
+Options that affect which files are linted
+([`excludeFiles`](https://github.com/jscs-dev/node-jscs#excludefiles)
 and
 [`fileExtensions`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#fileextensions))
-may be supported in the future.
+are currently ignored, use `jscs.exclude` to exclude files from
+linting.
 
 `jscs.configFile` is the file name of a JSCS configuration file,
 absolute or relative to the project's root. In contrast to [running
