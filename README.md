@@ -158,6 +158,8 @@ other versions of Mimosa as well.
 Version history
 ---------------
 
+* **[1.1.0](https://github.com/al-broco/mimosa-jscs/tree/v1.1.0)**
+  Support JSCS option excludeFiles.
 * **[1.0.4](https://github.com/al-broco/mimosa-jscs/tree/v1.0.4)**
   Add documentation and test for esnext, additionalRules options.
 * **[1.0.3](https://github.com/al-broco/mimosa-jscs/tree/v1.0.3)**
