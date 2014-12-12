@@ -155,6 +155,8 @@ other versions of Mimosa as well.
 Version history
 ---------------
 
+* **[1.0.4](https://github.com/al-broco/mimosa-jscs/tree/v1.0.4)**
+  Add documentation and test for esnext, additionalRules options.
 * **[1.0.3](https://github.com/al-broco/mimosa-jscs/tree/v1.0.3)**
   Support for the maxErrors option.
 * **[1.0.2](https://github.com/al-broco/mimosa-jscs/tree/v1.0.2)**

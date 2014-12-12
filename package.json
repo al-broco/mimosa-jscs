@@ -1,6 +1,6 @@
 {
   "name": "mimosa-jscs",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "homepage": "https://github.com/al-broco/mimosa-jscs",
   "author": "Petter Wintzell",
   "description": "Module for using JSCS in Mimosa",
