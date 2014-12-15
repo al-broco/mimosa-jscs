@@ -111,7 +111,7 @@ exports.validate = function (config, validators) {
   return errors;
 };
 
-// Validates that a property is a string pointing to an existign file
+// Validates that a property is a string pointing to an existing file
 // (absolute path or relative to project root). Similar to standard
 // Mimosa validator functions.
 function ifExistsIsFile(validators, errors, fld, file, relTo) {
