@@ -2,7 +2,7 @@ mimosa-jscs
 ===========
 
 This is a [Mimosa](http://mimosa.io) module for linting Javascript
-code using [JSCS](https://github.com/jscs-dev/node-jscs/tree/v1.7.3).
+code using [JSCS](https://github.com/jscs-dev/node-jscs/tree/v1.8.1).
 
 Installation
 ------------
@@ -37,7 +37,7 @@ options work just like the corresponding options for the
 To configure JSCS, set either the `jscs.rules` property, the
 `jscs.configFile` property, or both. JSCS configuration options are
 described in detail in [the JSCS
-documentation](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#options). For
+documentation](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#options). For
 example, adding the following to your Mimosa config will make JSCS
 check that files end with a newline:
 
@@ -51,29 +51,29 @@ check that files end with a newline:
 its contents. The following configuration options have been verified
 to work:
 
-* [Individual rules](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#rules).
-* [`preset`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#preset).
-* [`additionalRules`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#additionalrules).
+* [Individual rules](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#rules).
+* [`preset`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#preset).
+* [`additionalRules`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#additionalrules).
   Rule paths are relative to the project root.
-* [`excludeFiles`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#excludefiles).
+* [`excludeFiles`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#excludefiles).
   In addition to the `jscs.exclude` property described above,
   `mimosa-jscs` also supports excluding files using `excludeFiles` in
   the JSCS configuration. This can come in handy if you want to share
   a JSCS configuration file between Mimosa and (for instance) an
   editor or IDE. Paths are relative to the project root.
-* [`maxErrors`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#maxerrors). In
+* [`maxErrors`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#maxerrors). In
   build mode, `maxErrors` is the maximum number of reported violations
   per build. In watch mode, `maxErrors` is per file.
-* [`esnext`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#esnext).
+* [`esnext`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#esnext).
 
 The option
-[`fileExtensions`](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#fileextensions)
+[`fileExtensions`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#fileextensions)
 is currently ignored.
 
 `jscs.configFile` is the file name of a JSCS configuration file,
 absolute or relative to the project's root. In contrast to [running
 JSCS from the command
-line](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#cli),
+line](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#cli),
 `mimosa-jscs` will not search other directories outside of your
 project for a configuration file. In particular, it wll not search
 your home directory or the project directory's ancestors for a file
@@ -121,7 +121,7 @@ preset and also check that all comments starts with a capital letter:
     }
 
 To disable a rule, set it to `null` (this is [standard JSCS
-behavior](https://github.com/jscs-dev/node-jscs/tree/v1.7.3#example-1)).
+behavior](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#example-1)).
 The following configration will lint using the Crockford preset but
 disable indentation checking:
 
@@ -150,7 +150,9 @@ To lint using the Crockford preset, add the following to your
 Compatibility
 -------------
 
-This module uses a version of JSCS compatible with 1.7.3.
+This module uses a version 1.8.1 of JSCS. Since `mimosa-jscs` uses an
+undocumented JSCS API it has to be locked to a specific version since
+the API can change at any time.
 
 It has been tested with Mimosa version 2.3.17 but should work with
 other versions of Mimosa as well.
