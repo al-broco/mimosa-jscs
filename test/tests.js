@@ -241,11 +241,11 @@ describe('mimosa-jscs', function () {
       },
       {
         desc: 'where config.jcsc.configFile is not a string',
-        configFile: true
+        config: { configFile: true }
       },
       {
         desc: 'where config.jcsc.configFile is not an existing file',
-        configFile: 'nothing.json'
+        config: { configFile: 'nothing.json' }
       }
     ].forEach(function (data) {
       it(data.desc, function () {
@@ -255,8 +255,11 @@ describe('mimosa-jscs', function () {
           .then(function () {
             throw new Error('Build successful despite malformed JSCS config: ' +
                             util.inspect(data.config, { depth: null }));
-          }).error(function () {
+          }).catch(MimosaProject.BuildError, function (err) {
             // Expected (build should fail)
+            // check that it fails for the right reason
+            expect(err.errors.length).toBe(1);
+            expect(err.errors[0].text).toMatch(/Unable to start Mimosa/);
           });
       });
     });

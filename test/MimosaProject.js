@@ -73,9 +73,9 @@ function MimosaProject() {
  * not been created already. Will not create project files using
  * createProjectFiles.
  *
- * Returns a promise that is rejected with an Error if execution fails
- * and that is resolved with the output (stdout and stderr combined)
- * if successful.
+ * Returns a promise that is rejected with a MimosaProject.ExecError
+ * if execution fails and that is resolved with the output (stdout and
+ * stderr combined) if successful.
  */
 MimosaProject.prototype.exec = function (cmd) {
   var args = Array.prototype.slice.call(arguments, 1);
@@ -101,15 +101,30 @@ function exec(cmd, args, workingDir) {
 
     process.on('close', function (code) {
       if (code === 0) {
-        resolve(output, code);
+        resolve(output);
       } else {
-        var msg = 'Command <' + cmd + ' ' + args.join(' ') + '> failed, '
-              + 'error code: ' + code + ', output: ' + output
-        reject(new Error(msg));
+        reject(new ExecError(cmd, args, code, output));
       }
     });
   });
 }
+
+/**
+ * Indicates that execution of a command failed.
+ */
+function ExecError(cmd, args, code, output) {
+  this.message = 'Command "' + cmd + ' ' + args.join(' ') + '" failed, ' +
+    'error code: ' + code + ', output:\n' + output;
+  this.name = 'ExecError';
+  this.cmd = cmd;
+  this.args = args;
+  this.code = code;
+  this.output = output;
+  Error.captureStackTrace(this, ExecError);
+}
+ExecError.prototype = Object.create(Error.prototype);
+ExecError.prototype.constructor = ExecError;
+MimosaProject.ExecError = ExecError;
 
 /**
  * Creates a temporary directory for the project. The directory will
@@ -187,8 +202,9 @@ function createFileOrDir(path, contents) {
  * Will create the project's files (using createProjectFiles) if they
  * have not been created already.
  *
- * Returns a promise that is resolved when the build finishes with an
- * object with the following properties:
+ * Returns a promise. If the build succeeds without errors the promise
+ * is resolved, otherwise it is rejected. The promise will be resolved
+ * or rejected with an object with the following properties:
  * - output, the stdout and stderr in its entirety
  * - logLines, an array with an object for each line with properties:
  *   - raw, the line
@@ -198,8 +214,10 @@ function createFileOrDir(path, contents) {
  *     WARN, etc)
  *   - message, the log line message
  * - warnings, the log lines with log level WARN
+ * - errors, the log lines with log level ERROR
  *
- * If the buid fails the promise is rejected with an Error.
+ * If the promise is rejected the type of the object is
+ * MimosaProject.BuildError.
  */
 MimosaProject.prototype.build = function () {
   return this
@@ -208,18 +226,40 @@ MimosaProject.prototype.build = function () {
     .then(function () {
       return this.exec('mimosa', 'build', '--errorout');
     })
+    .catch(ExecError, function (error) {
+      return Promise.reject(new BuildError(error.output));
+    })
     .then(function (output) {
-      return Promise.resolve(new BuildResult(output));
+      return createBuildResult(output);
     });
 };
 
-// Internal class for representing a build result, with parsed output
-function BuildResult(output) {
-  this.output = output.toString();
-  this.logLines = parseLines(output);
-  this.warnings = this.logLines.filter(function (line) {
+/**
+ * Indicates that a build failed.
+ */
+function BuildError(output) {
+  this.message = 'Build failed, output:\n' + output;
+  this.name = 'BuildError';
+  createBuildResult(output, this);
+  Error.captureStackTrace(this, BuildError);
+}
+BuildError.prototype = Object.create(Error.prototype);
+BuildError.prototype.constructor = BuildError;
+MimosaProject.BuildError = BuildError;
+
+// Internal function that creates or decorates an object with output,
+// logLines, etc - the reuslt of a build
+function createBuildResult(output, object) {
+  var result = object || { };
+  result.output = output.toString();
+  result.logLines = parseLines(output);
+  result.warnings = result.logLines.filter(function (line) {
     return line.logLevel === 'WARN';
   });
+  result.errors = result.logLines.filter(function (line) {
+    return line.logLevel === 'ERROR';
+  });
+  return result;
 }
 
 // Internal function for parsing build output
