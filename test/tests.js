@@ -20,31 +20,31 @@ describe('mimosa-jscs', function () {
         config: []
       },
       {
-        desc: 'where config.jcsc.compiled is not a boolean',
+        desc: 'where config.jscs.compiled is not a boolean',
         config: { compiled: 'true' }
       },
       {
-        desc: 'where config.jcsc.copied is not a boolean',
+        desc: 'where config.jscs.copied is not a boolean',
         config: { copied: 'true' }
       },
       {
-        desc: 'where config.jcsc.vendor is not a boolean',
+        desc: 'where config.jscs.vendor is not a boolean',
         config: { vendor: 'true' }
       },
       {
-        desc: 'where config.jcsc.rules is not an object',
+        desc: 'where config.jscs.rules is not an object',
         config: { rules: [] }
       },
       {
-        desc: 'where config.jcsc.exclude is not an array',
+        desc: 'where config.jscs.exclude is not an array',
         config: { exclude: true }
       },
       {
-        desc: 'where config.jcsc.configFile is not a string',
+        desc: 'where config.jscs.configFile is not a string',
         config: { configFile: true }
       },
       {
-        desc: 'where config.jcsc.configFile is not an existing file',
+        desc: 'where config.jscs.configFile is not an existing file',
         config: { configFile: 'nothing.json' }
       }
     ].forEach(function (data) {
