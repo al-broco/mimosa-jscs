@@ -8,133 +8,59 @@ describe('mimosa-jscs', function () {
   var project;
 
   beforeEach(function () {
-    function setup() {
-      project = new MimosaProject();
-      project.mimosaConfig.modules.push('jscs');
-      return project.exec('npm', 'install', path.normalize(process.cwd()));
-    }
-
-    // Setup sometimes fails because npm install fails. This appears
-    // to be random and possibly a bug in npm. The code below is a
-    // workaround that retries the installation twice before giving
-    // up.
-    return setup().catch(setup).catch(setup);
-  });
-
-  describe('linting a single copied JS asset', function () {
-    it('with default configuration reports no violations ' +
-       'for correct (but ugly) code',
-       function () {
-         project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
-
-         return buildAndTest(project, function (violations) {
-           expect(violations).toEqual([]);
-         });
-       });
-
-    it('with default configuration reports violations ' +
-       'for malformed code',
-       function () {
-         project.files.assets.javascripts['main.js'] = 'malformed code';
-
-         return buildAndTest(project, function (violations) {
-           expect(violations).toNotEqual([]);
-         });
-       });
-
-    it('can lint using a preset', function () {
-      project.mimosaConfig.jscs = { rules: { preset: 'crockford' } };
-
-      project.files.assets.javascripts['main.js'] = 'x=1';
-
-      return buildAndTest(project, function (violations) {
-        expect(violations).toNotEqual([]);
-      });
-    });
-
-    it('can lint using an individually enabled rule', function () {
-      project.mimosaConfig.jscs = { rules: { requireLineFeedAtFileEnd: true } };
-
-      project.files.assets.javascripts['main.js'] = '// No line feed';
-
-      return buildAndTest(project, function (violations) {
-        expect(violations.length).toBe(1);
-        expect(violations[0]).toMatch(/Missing line feed/);
-      });
+    return setupProject().then(function (createdProject) {
+      project = createdProject;
     });
   });
 
-  describe('linting a project with a JS file, a coffeescript file, ' +
-           'a vendor JS file, and a vendor coffeescript file',
-           function ()
-  {
-    // Data driven tests that check that the correct files are linted
-    // depending on compiled, copied, vendor config properties
-
-    beforeEach(function () {
-      project.mimosaConfig.modules.push('coffeescript');
-    });
-
+  describe('does not allow a malformed configuration', function () {
     [
-      { compiled: false, copied: false, vendor: false,
-        expectedLintedFiles: [] },
-      { compiled: false, copied: true, vendor: false,
-        expectedLintedFiles: ['copied.js'] },
-      { compiled: true, copied: false, vendor: false,
-        expectedLintedFiles: ['compiled.coffee'] },
-      { compiled: true, copied: true, vendor: false,
-        expectedLintedFiles: ['copied.js', 'compiled.coffee'] },
-      { compiled: false, copied: false, vendor: true,
-        expectedLintedFiles: ['copied-vendor.js'] },
-      { compiled: false, copied: true, vendor: true,
-        expectedLintedFiles: ['copied.js', 'copied-vendor.js'] },
-      { compiled: true, copied: false, vendor: true,
-        expectedLintedFiles: ['compiled.coffee', 'copied-vendor.js'] },
-      { compiled: true, copied: true, vendor: true,
-        expectedLintedFiles: ['copied.js',
-                              'compiled.coffee',
-                              'copied-vendor.js'] }
-    ].forEach(function (params) {
-      var count = params.expectedLintedFiles.length;
-      var description =
-            count + (count === 1 ? ' file is' : ' files are') +
-            ' linted when ' +
-            'compiled = ' + params.compiled +
-            ', copied = ' + params.copied +
-            ', vendor = ' + params.vendor;
-      it(description, function () {
-        project.mimosaConfig.jscs = {
-          compiled: params.compiled,
-          copied: params.copied,
-          vendor: params.vendor,
-          rules: {
-            disallowDanglingUnderscores: true
-          }
-        };
+      {
+        desc: 'where config.jscs is not an object',
+        config: []
+      },
+      {
+        desc: 'where config.jcsc.compiled is not a boolean',
+        config: { compiled: 'true' }
+      },
+      {
+        desc: 'where config.jcsc.copied is not a boolean',
+        config: { copied: 'true' }
+      },
+      {
+        desc: 'where config.jcsc.vendor is not a boolean',
+        config: { vendor: 'true' }
+      },
+      {
+        desc: 'where config.jcsc.rules is not an object',
+        config: { rules: [] }
+      },
+      {
+        desc: 'where config.jcsc.exclude is not an array',
+        config: { exclude: true }
+      },
+      {
+        desc: 'where config.jcsc.configFile is not a string',
+        config: { configFile: true }
+      },
+      {
+        desc: 'where config.jcsc.configFile is not an existing file',
+        config: { configFile: 'nothing.json' }
+      }
+    ].forEach(function (data) {
+      it(data.desc, function () {
+        project.mimosaConfig.jscs = data.config;
 
-        // Set up some files, each of which will produce one warning if
-        // linted
-        project.files.assets.javascripts['copied.js'] =
-          'var _foo; // copied javascript file';
-        project.files.assets.javascripts['compiled.coffee'] =
-          '`var _foo // compiled coffeescript file`';
-        project.files.assets.javascripts.vendor['copied-vendor.js'] =
-          'var _foo // copied vendor javascript file';
-        project.files.assets.javascripts.vendor['compiled-vendor.coffee'] =
-          '`var _foo // compiled vendor coffeescript file`';
-
-        // Build and check warnings to see that the expected set of
-        // files where linted
-        return buildAndTest(project, function (violations) {
-          params.expectedLintedFiles.forEach(function (fileName) {
-            expectViolationsInFile(violations, fileName);
+        return project.build()
+          .then(function () {
+            throw new Error('Build successful despite malformed JSCS config: ' +
+                            util.inspect(data.config, { depth: null }));
+          }).catch(MimosaProject.BuildError, function (err) {
+            // Expected (build should fail)
+            // check that it fails for the right reason
+            expect(err.errors.length).toBe(1);
+            expect(err.errors[0].text).toMatch(/Unable to start Mimosa/);
           });
-
-          expect(violations.length).toBe(params.expectedLintedFiles.length);
-          violations.forEach(function (violation) {
-            expect(violation).toMatch(/Invalid dangling underscore/);
-          });
-        });
       });
     });
   });
@@ -209,58 +135,6 @@ describe('mimosa-jscs', function () {
         return buildAndTest(project, function (violations) {
           expect(violations).toEqual([]);
         });
-      });
-    });
-  });
-
-  describe('does not allow a malformed configuration', function () {
-    [
-      {
-        desc: 'where config.jscs is not an object',
-        config: []
-      },
-      {
-        desc: 'where config.jcsc.compiled is not a boolean',
-        config: { compiled: 'true' }
-      },
-      {
-        desc: 'where config.jcsc.copied is not a boolean',
-        config: { copied: 'true' }
-      },
-      {
-        desc: 'where config.jcsc.vendor is not a boolean',
-        config: { vendor: 'true' }
-      },
-      {
-        desc: 'where config.jcsc.rules is not an object',
-        config: { rules: [] }
-      },
-      {
-        desc: 'where config.jcsc.exclude is not an array',
-        config: { exclude: true }
-      },
-      {
-        desc: 'where config.jcsc.configFile is not a string',
-        config: { configFile: true }
-      },
-      {
-        desc: 'where config.jcsc.configFile is not an existing file',
-        config: { configFile: 'nothing.json' }
-      }
-    ].forEach(function (data) {
-      it(data.desc, function () {
-        project.mimosaConfig.jscs = data.config;
-
-        return project.build()
-          .then(function () {
-            throw new Error('Build successful despite malformed JSCS config: ' +
-                            util.inspect(data.config, { depth: null }));
-          }).catch(MimosaProject.BuildError, function (err) {
-            // Expected (build should fail)
-            // check that it fails for the right reason
-            expect(err.errors.length).toBe(1);
-            expect(err.errors[0].text).toMatch(/Unable to start Mimosa/);
-          });
       });
     });
   });
@@ -393,6 +267,134 @@ describe('mimosa-jscs', function () {
         });
     });
   });
+});
+
+describe('mimosa-jscs with JSCS v1.8.1', function () {
+  var project;
+
+  beforeEach(function () {
+    return setupProject('1.8.1').then(function (createdProject) {
+      project = createdProject;
+    });
+  });
+
+  describe('linting a single copied JS asset', function () {
+    it('with default configuration reports no violations ' +
+       'for correct (but ugly) code',
+       function () {
+         project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+
+         return buildAndTest(project, function (violations) {
+           expect(violations).toEqual([]);
+         });
+       });
+
+    it('with default configuration reports violations ' +
+       'for malformed code',
+       function () {
+         project.files.assets.javascripts['main.js'] = 'malformed code';
+
+         return buildAndTest(project, function (violations) {
+           expect(violations).toNotEqual([]);
+         });
+       });
+
+    it('can lint using a preset', function () {
+      project.mimosaConfig.jscs = { rules: { preset: 'crockford' } };
+
+      project.files.assets.javascripts['main.js'] = 'x=1';
+
+      return buildAndTest(project, function (violations) {
+        expect(violations).toNotEqual([]);
+      });
+    });
+
+    it('can lint using an individually enabled rule', function () {
+      project.mimosaConfig.jscs = { rules: { requireLineFeedAtFileEnd: true } };
+
+      project.files.assets.javascripts['main.js'] = '// No line feed';
+
+      return buildAndTest(project, function (violations) {
+        expect(violations.length).toBe(1);
+        expect(violations[0]).toMatch(/Missing line feed/);
+      });
+    });
+  });
+
+  describe('linting a project with a JS file, a coffeescript file, ' +
+           'a vendor JS file, and a vendor coffeescript file',
+           function ()
+  {
+    // Data driven tests that check that the correct files are linted
+    // depending on compiled, copied, vendor config properties
+
+    beforeEach(function () {
+      project.mimosaConfig.modules.push('coffeescript');
+    });
+
+    [
+      { compiled: false, copied: false, vendor: false,
+        expectedLintedFiles: [] },
+      { compiled: false, copied: true, vendor: false,
+        expectedLintedFiles: ['copied.js'] },
+      { compiled: true, copied: false, vendor: false,
+        expectedLintedFiles: ['compiled.coffee'] },
+      { compiled: true, copied: true, vendor: false,
+        expectedLintedFiles: ['copied.js', 'compiled.coffee'] },
+      { compiled: false, copied: false, vendor: true,
+        expectedLintedFiles: ['copied-vendor.js'] },
+      { compiled: false, copied: true, vendor: true,
+        expectedLintedFiles: ['copied.js', 'copied-vendor.js'] },
+      { compiled: true, copied: false, vendor: true,
+        expectedLintedFiles: ['compiled.coffee', 'copied-vendor.js'] },
+      { compiled: true, copied: true, vendor: true,
+        expectedLintedFiles: ['copied.js',
+                              'compiled.coffee',
+                              'copied-vendor.js'] }
+    ].forEach(function (params) {
+      var count = params.expectedLintedFiles.length;
+      var description =
+            count + (count === 1 ? ' file is' : ' files are') +
+            ' linted when ' +
+            'compiled = ' + params.compiled +
+            ', copied = ' + params.copied +
+            ', vendor = ' + params.vendor;
+      it(description, function () {
+        project.mimosaConfig.jscs = {
+          compiled: params.compiled,
+          copied: params.copied,
+          vendor: params.vendor,
+          rules: {
+            disallowDanglingUnderscores: true
+          }
+        };
+
+        // Set up some files, each of which will produce one warning if
+        // linted
+        project.files.assets.javascripts['copied.js'] =
+          'var _foo; // copied javascript file';
+        project.files.assets.javascripts['compiled.coffee'] =
+          '`var _foo // compiled coffeescript file`';
+        project.files.assets.javascripts.vendor['copied-vendor.js'] =
+          'var _foo // copied vendor javascript file';
+        project.files.assets.javascripts.vendor['compiled-vendor.coffee'] =
+          '`var _foo // compiled vendor coffeescript file`';
+
+        // Build and check warnings to see that the expected set of
+        // files where linted
+        return buildAndTest(project, function (violations) {
+          params.expectedLintedFiles.forEach(function (fileName) {
+            expectViolationsInFile(violations, fileName);
+          });
+
+          expect(violations.length).toBe(params.expectedLintedFiles.length);
+          violations.forEach(function (violation) {
+            expect(violation).toMatch(/Invalid dangling underscore/);
+          });
+        });
+      });
+    });
+  });
 
   describe('supports the maxErrors option', function () {
     it('which limits the number of violations reported', function () {
@@ -497,6 +499,30 @@ describe('mimosa-jscs', function () {
     });
   });
 });
+
+// Helper function that creates a project and (optionally) installs
+// a specific JSCS version.
+function setupProject(jscsVersion) {
+  function setup() {
+    var project = new MimosaProject();
+    project.mimosaConfig.modules.push('jscs');
+
+    var modules = [path.normalize(process.cwd())];
+    jscsVersion && modules.push('jscs@' + jscsVersion);
+
+    var npmInstallCmd = ['npm', 'install'].concat(modules);
+
+    return project.exec.apply(project, npmInstallCmd).then(function () {
+      return Promise.resolve(project);
+    });
+  }
+
+  // Setup sometimes fails because npm install fails. This appears
+  // to be random and possibly a bug in npm. The code below is a
+  // workaround that retries the installation twice before giving
+  // up.
+  return setup().catch(setup).catch(setup);
+}
 
 // Helper function that builds and invokes a test function with
 // violations, testResult as arguments
