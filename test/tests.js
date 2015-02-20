@@ -4,6 +4,11 @@ var util = require('util');
 var Promise = require('bluebird');
 var MimosaProject = require('./MimosaProject');
 
+var JSCS_VERSIONS_TO_TEST = [
+  '1.8.1',
+  '1.8.0'
+];
+
 describe('mimosa-jscs', function () {
   var project;
 
@@ -269,232 +274,238 @@ describe('mimosa-jscs', function () {
   });
 });
 
-describe('mimosa-jscs with JSCS v1.8.1', function () {
-  var project;
-
-  beforeEach(function () {
-    return setupProject('1.8.1').then(function (createdProject) {
-      project = createdProject;
-    });
-  });
-
-  describe('linting a single copied JS asset', function () {
-    it('with default configuration reports no violations ' +
-       'for correct (but ugly) code',
-       function () {
-         project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
-
-         return buildAndTest(project, function (violations) {
-           expect(violations).toEqual([]);
-         });
-       });
-
-    it('with default configuration reports violations ' +
-       'for malformed code',
-       function () {
-         project.files.assets.javascripts['main.js'] = 'malformed code';
-
-         return buildAndTest(project, function (violations) {
-           expect(violations).toNotEqual([]);
-         });
-       });
-
-    it('can lint using a preset', function () {
-      project.mimosaConfig.jscs = { rules: { preset: 'crockford' } };
-
-      project.files.assets.javascripts['main.js'] = 'x=1';
-
-      return buildAndTest(project, function (violations) {
-        expect(violations).toNotEqual([]);
-      });
-    });
-
-    it('can lint using an individually enabled rule', function () {
-      project.mimosaConfig.jscs = { rules: { requireLineFeedAtFileEnd: true } };
-
-      project.files.assets.javascripts['main.js'] = '// No line feed';
-
-      return buildAndTest(project, function (violations) {
-        expect(violations.length).toBe(1);
-        expect(violations[0]).toMatch(/Missing line feed/);
-      });
-    });
-  });
-
-  describe('linting a project with a JS file, a coffeescript file, ' +
-           'a vendor JS file, and a vendor coffeescript file',
-           function ()
-  {
-    // Data driven tests that check that the correct files are linted
-    // depending on compiled, copied, vendor config properties
+JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
+  describe('mimosa-jscs with JSCS v' + jscsVersion, function () {
+    var project;
 
     beforeEach(function () {
-      project.mimosaConfig.modules.push('coffeescript');
+      return setupProject(jscsVersion).then(function (createdProject) {
+        project = createdProject;
+      });
     });
 
-    [
-      { compiled: false, copied: false, vendor: false,
-        expectedLintedFiles: [] },
-      { compiled: false, copied: true, vendor: false,
-        expectedLintedFiles: ['copied.js'] },
-      { compiled: true, copied: false, vendor: false,
-        expectedLintedFiles: ['compiled.coffee'] },
-      { compiled: true, copied: true, vendor: false,
-        expectedLintedFiles: ['copied.js', 'compiled.coffee'] },
-      { compiled: false, copied: false, vendor: true,
-        expectedLintedFiles: ['copied-vendor.js'] },
-      { compiled: false, copied: true, vendor: true,
-        expectedLintedFiles: ['copied.js', 'copied-vendor.js'] },
-      { compiled: true, copied: false, vendor: true,
-        expectedLintedFiles: ['compiled.coffee', 'copied-vendor.js'] },
-      { compiled: true, copied: true, vendor: true,
-        expectedLintedFiles: ['copied.js',
-                              'compiled.coffee',
-                              'copied-vendor.js'] }
-    ].forEach(function (params) {
-      var count = params.expectedLintedFiles.length;
-      var description =
-            count + (count === 1 ? ' file is' : ' files are') +
-            ' linted when ' +
-            'compiled = ' + params.compiled +
-            ', copied = ' + params.copied +
-            ', vendor = ' + params.vendor;
-      it(description, function () {
+    describe('linting a single copied JS asset', function () {
+      it('with default configuration reports no violations ' +
+         'for correct (but ugly) code',
+         function () {
+           project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+
+           return buildAndTest(project, function (violations) {
+             expect(violations).toEqual([]);
+           });
+         });
+
+      it('with default configuration reports violations ' +
+         'for malformed code',
+         function () {
+           project.files.assets.javascripts['main.js'] = 'malformed code';
+
+           return buildAndTest(project, function (violations) {
+             expect(violations).toNotEqual([]);
+           });
+         });
+
+      it('can lint using a preset', function () {
+        project.mimosaConfig.jscs = { rules: { preset: 'crockford' } };
+
+        project.files.assets.javascripts['main.js'] = 'x=1';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations).toNotEqual([]);
+        });
+      });
+
+      it('can lint using an individually enabled rule', function () {
         project.mimosaConfig.jscs = {
-          compiled: params.compiled,
-          copied: params.copied,
-          vendor: params.vendor,
-          rules: {
-            disallowDanglingUnderscores: true
-          }
+          rules: { requireLineFeedAtFileEnd: true }
         };
 
-        // Set up some files, each of which will produce one warning if
-        // linted
-        project.files.assets.javascripts['copied.js'] =
-          'var _foo; // copied javascript file';
-        project.files.assets.javascripts['compiled.coffee'] =
-          '`var _foo // compiled coffeescript file`';
-        project.files.assets.javascripts.vendor['copied-vendor.js'] =
-          'var _foo // copied vendor javascript file';
-        project.files.assets.javascripts.vendor['compiled-vendor.coffee'] =
-          '`var _foo // compiled vendor coffeescript file`';
+        project.files.assets.javascripts['main.js'] = '// No line feed';
 
-        // Build and check warnings to see that the expected set of
-        // files where linted
         return buildAndTest(project, function (violations) {
-          params.expectedLintedFiles.forEach(function (fileName) {
-            expectViolationsInFile(violations, fileName);
-          });
+          expect(violations.length).toBe(1);
+          expect(violations[0]).toMatch(/Missing line feed/);
+        });
+      });
+    });
 
-          expect(violations.length).toBe(params.expectedLintedFiles.length);
-          violations.forEach(function (violation) {
-            expect(violation).toMatch(/Invalid dangling underscore/);
+    describe('linting a project with a JS file, a coffeescript file, ' +
+             'a vendor JS file, and a vendor coffeescript file',
+             function ()
+    {
+      // Data driven tests that check that the correct files are linted
+      // depending on compiled, copied, vendor config properties
+
+      beforeEach(function () {
+        project.mimosaConfig.modules.push('coffeescript');
+      });
+
+      [
+        { compiled: false, copied: false, vendor: false,
+          expectedLintedFiles: [] },
+        { compiled: false, copied: true, vendor: false,
+          expectedLintedFiles: ['copied.js'] },
+        { compiled: true, copied: false, vendor: false,
+          expectedLintedFiles: ['compiled.coffee'] },
+        { compiled: true, copied: true, vendor: false,
+          expectedLintedFiles: ['copied.js', 'compiled.coffee'] },
+        { compiled: false, copied: false, vendor: true,
+          expectedLintedFiles: ['copied-vendor.js'] },
+        { compiled: false, copied: true, vendor: true,
+        expectedLintedFiles: ['copied.js', 'copied-vendor.js'] },
+        { compiled: true, copied: false, vendor: true,
+          expectedLintedFiles: ['compiled.coffee', 'copied-vendor.js'] },
+        { compiled: true, copied: true, vendor: true,
+          expectedLintedFiles: ['copied.js',
+                                'compiled.coffee',
+                                'copied-vendor.js'] }
+      ].forEach(function (params) {
+        var count = params.expectedLintedFiles.length;
+        var description =
+              count + (count === 1 ? ' file is' : ' files are') +
+              ' linted when ' +
+              'compiled = ' + params.compiled +
+              ', copied = ' + params.copied +
+              ', vendor = ' + params.vendor;
+        it(description, function () {
+          project.mimosaConfig.jscs = {
+            compiled: params.compiled,
+            copied: params.copied,
+            vendor: params.vendor,
+            rules: {
+              disallowDanglingUnderscores: true
+            }
+          };
+
+          // Set up some files, each of which will produce one warning if
+          // linted
+          project.files.assets.javascripts['copied.js'] =
+            'var _foo; // copied javascript file';
+          project.files.assets.javascripts['compiled.coffee'] =
+            '`var _foo // compiled coffeescript file`';
+          project.files.assets.javascripts.vendor['copied-vendor.js'] =
+            'var _foo // copied vendor javascript file';
+          project.files.assets.javascripts.vendor['compiled-vendor.coffee'] =
+            '`var _foo // compiled vendor coffeescript file`';
+
+          // Build and check warnings to see that the expected set of
+          // files where linted
+          return buildAndTest(project, function (violations) {
+            params.expectedLintedFiles.forEach(function (fileName) {
+              expectViolationsInFile(violations, fileName);
+            });
+
+            expect(violations.length).toBe(params.expectedLintedFiles.length);
+            violations.forEach(function (violation) {
+              expect(violation).toMatch(/Invalid dangling underscore/);
+            });
           });
         });
       });
     });
-  });
 
-  describe('supports the maxErrors option', function () {
-    it('which limits the number of violations reported', function () {
-      project.mimosaConfig.jscs = {
-        rules: {
-          requireLineFeedAtFileEnd: true,
-          disallowDanglingUnderscores: true,
-          maxErrors: 1
-        }
-      };
+    describe('supports the maxErrors option', function () {
+      it('which limits the number of violations reported', function () {
+        project.mimosaConfig.jscs = {
+          rules: {
+            requireLineFeedAtFileEnd: true,
+            disallowDanglingUnderscores: true,
+            maxErrors: 1
+          }
+        };
 
-      project.files.assets.javascripts['main.js'] = 'var _foo;';
+        project.files.assets.javascripts['main.js'] = 'var _foo;';
 
-      return buildAndTest(project, function (violations) {
-        expect(violations.length).toBe(1);
+        return buildAndTest(project, function (violations) {
+          expect(violations.length).toBe(1);
+        });
+      });
+
+      it('which applies per project and not per file in build mode',
+         function ()
+      {
+        project.mimosaConfig.jscs = {
+          rules: {
+            requireLineFeedAtFileEnd: true,
+            disallowDanglingUnderscores: true,
+            maxErrors: 1
+          }
+        };
+
+        project.files.assets.javascripts['file1.js'] = 'var _foo;';
+        project.files.assets.javascripts['file2.js'] = 'var _foo;';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations.length).toBe(1);
+        });
       });
     });
 
-    it('which applies per project and not per file in build mode', function () {
+    it('supports the esnext option which enables ES6 parsing', function () {
       project.mimosaConfig.jscs = {
         rules: {
-          requireLineFeedAtFileEnd: true,
-          disallowDanglingUnderscores: true,
-          maxErrors: 1
+          esnext: true
         }
       };
 
-      project.files.assets.javascripts['file1.js'] = 'var _foo;';
-      project.files.assets.javascripts['file2.js'] = 'var _foo;';
+      project.files.assets.javascripts['main.js'] = 'class Foo {} // ES6';
 
       return buildAndTest(project, function (violations) {
-        expect(violations.length).toBe(1);
-      });
-    });
-  });
-
-  it('supports the esnext option which enables ES6 parsing', function () {
-    project.mimosaConfig.jscs = {
-      rules: {
-        esnext: true
-      }
-    };
-
-    project.files.assets.javascripts['main.js'] = 'class Foo {} // ES6';
-
-    return buildAndTest(project, function (violations) {
-      expect(violations).toEqual([]);
-    });
-  });
-
-  describe('supports the additionalRules option', function () {
-    // JS file that defines a rule that always reports one violation
-    // with the description "Dummy error":
-    var RULE_DEF_FILE_CONTENTS =
-          'module.exports = function() {};\n' +
-          'module.exports.prototype = {\n' +
-          '  configure: function() { },\n' +
-          '  getOptionName: function() { return "dummy"; },\n' +
-          '  check: function(file, errors) {\n' +
-          '    errors.add("Dummy error", 1, 0);\n' +
-          '  }\n' +
-          '};';
-
-    it('which can be used to enable custom rules', function () {
-      project.mimosaConfig.jscs = {
-        rules: {
-          additionalRules: ['rules/*.js'],
-          dummy: true
-        }
-      };
-
-      project.files.rules = { 'dummy-rule.js': RULE_DEF_FILE_CONTENTS };
-
-      project.files.assets.javascripts['main.js'] = '// Empty file';
-
-      return buildAndTest(project, function (violations) {
-        expect(violations.length).toBe(1);
-        expect(violations[0]).toMatch(/Dummy error/);
+        expect(violations).toEqual([]);
       });
     });
 
-    it('which specified paths relative to the project root', function () {
-      // This test loads the config from a file and verifies that the
-      // additionalRules path is still relative to the project root
-      project.mimosaConfig.jscs = {
-        configFile: 'config/config.json'
-      };
+    describe('supports the additionalRules option', function () {
+      // JS file that defines a rule that always reports one violation
+      // with the description "Dummy error":
+      var RULE_DEF_FILE_CONTENTS =
+            'module.exports = function() {};\n' +
+            'module.exports.prototype = {\n' +
+            '  configure: function() { },\n' +
+            '  getOptionName: function() { return "dummy"; },\n' +
+            '  check: function(file, errors) {\n' +
+            '    errors.add("Dummy error", 1, 0);\n' +
+            '  }\n' +
+            '};';
 
-      project.files.rules = { 'dummy-rule.js': RULE_DEF_FILE_CONTENTS };
+      it('which can be used to enable custom rules', function () {
+        project.mimosaConfig.jscs = {
+          rules: {
+            additionalRules: ['rules/*.js'],
+            dummy: true
+          }
+        };
 
-      project.files.config = {
-        'config.json':
+        project.files.rules = { 'dummy-rule.js': RULE_DEF_FILE_CONTENTS };
+
+        project.files.assets.javascripts['main.js'] = '// Empty file';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations.length).toBe(1);
+          expect(violations[0]).toMatch(/Dummy error/);
+        });
+      });
+
+      it('which specified paths relative to the project root', function () {
+        // This test loads the config from a file and verifies that the
+        // additionalRules path is still relative to the project root
+        project.mimosaConfig.jscs = {
+          configFile: 'config/config.json'
+        };
+
+        project.files.rules = { 'dummy-rule.js': RULE_DEF_FILE_CONTENTS };
+
+        project.files.config = {
+          'config.json':
           '{ "additionalRules": [ "rules/*.js" ], "dummy": true }'
-      };
+        };
 
-      project.files.assets.javascripts['main.js'] = '// Empty file';
+        project.files.assets.javascripts['main.js'] = '// Empty file';
 
-      return buildAndTest(project, function (violations) {
-        expect(violations.length).toBe(1);
-        expect(violations[0]).toMatch(/Dummy error/);
+        return buildAndTest(project, function (violations) {
+          expect(violations.length).toBe(1);
+          expect(violations[0]).toMatch(/Dummy error/);
+        });
       });
     });
   });
