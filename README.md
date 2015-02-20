@@ -146,16 +146,32 @@ To lint using the Crockford preset, add the following to your
         preset: 'crockford'
     }
 
-
 Compatibility
 -------------
 
-This module uses a version 1.8.1 of JSCS. Since `mimosa-jscs` uses an
-undocumented JSCS API it has to be locked to a specific version since
-the API can change at any time.
+Compatibility with JSCS is tricky since `mimosa-jscs` uses an
+undocumented JSCS API that could theoretically change between any two
+JSCS versions.
 
-It has been tested with Mimosa version 2.3.17 but should work with
-other versions of Mimosa as well.
+By default, `mimosa-jscs` uses the latest version of JSCS it has been
+verified to work with, currently version 1.8.1. To use a different
+JSCS version add JSCS as dependency to your project. For example, to
+use JSCS version 1.8.0 type the following in your project root:
+
+    npm install --save-dev jscs@1.8.0
+
+If you try to use `mimosa-jscs` with a version of JSCS it has not been
+verified to be compatible with, `npm install` will fail with the
+following message:
+
+    npm ERR! peerinvalid The package jscs does not satisfy its siblings' peerDependencies requirements!
+
+`mimosa-jscs` works with the following JSCS versions:
+
+* 1.8.1.
+
+This module has been tested with Mimosa version 2.3.17 but should work
+with other versions of Mimosa as well.
 
 Version history
 ---------------
