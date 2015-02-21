@@ -1,12 +1,17 @@
 var path = require('path');
 var expect = require('expect');
 var util = require('util');
+var semver = require('semver');
 var Promise = require('bluebird');
 var MimosaProject = require('./MimosaProject');
 
 var JSCS_VERSIONS_TO_TEST = [
   '1.8.1',
-  '1.8.0'
+  '1.8.0',
+  '1.7.3',
+  '1.7.2',
+  '1.7.1',
+  '1.7.0'
 ];
 
 describe('mimosa-jscs', function () {
@@ -441,19 +446,21 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
       });
     });
 
-    it('supports the esnext option which enables ES6 parsing', function () {
-      project.mimosaConfig.jscs = {
-        rules: {
-          esnext: true
-        }
-      };
+    if (semver.satisfies(jscsVersion, '>= 1.7.3')) {
+      it('supports the esnext option which enables ES6 parsing', function () {
+        project.mimosaConfig.jscs = {
+          rules: {
+            esnext: true
+          }
+        };
 
-      project.files.assets.javascripts['main.js'] = 'class Foo {} // ES6';
+        project.files.assets.javascripts['main.js'] = 'class Foo {} // ES6';
 
-      return buildAndTest(project, function (violations) {
-        expect(violations).toEqual([]);
+        return buildAndTest(project, function (violations) {
+          expect(violations).toEqual([]);
+        });
       });
-    });
+    }
 
     describe('supports the additionalRules option', function () {
       // JS file that defines a rule that always reports one violation
