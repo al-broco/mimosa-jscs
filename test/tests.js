@@ -75,6 +75,81 @@ describe('mimosa-jscs', function () {
     });
   });
 
+  describe('linting a project with a JS file, a coffeescript file, ' +
+           'a vendor JS file, and a vendor coffeescript file',
+           function ()
+  {
+    // Data driven tests that check that the correct files are linted
+    // depending on compiled, copied, vendor config properties
+
+    beforeEach(function () {
+      project.mimosaConfig.modules.push('coffeescript');
+    });
+
+    [
+      { compiled: false, copied: false, vendor: false,
+        expectedLintedFiles: [] },
+      { compiled: false, copied: true, vendor: false,
+        expectedLintedFiles: ['copied.js'] },
+      { compiled: true, copied: false, vendor: false,
+        expectedLintedFiles: ['compiled.coffee'] },
+      { compiled: true, copied: true, vendor: false,
+        expectedLintedFiles: ['copied.js', 'compiled.coffee'] },
+      { compiled: false, copied: false, vendor: true,
+        expectedLintedFiles: ['copied-vendor.js'] },
+      { compiled: false, copied: true, vendor: true,
+        expectedLintedFiles: ['copied.js', 'copied-vendor.js'] },
+      { compiled: true, copied: false, vendor: true,
+        expectedLintedFiles: ['compiled.coffee', 'copied-vendor.js'] },
+      { compiled: true, copied: true, vendor: true,
+        expectedLintedFiles: ['copied.js',
+                              'compiled.coffee',
+                              'copied-vendor.js'] }
+    ].forEach(function (params) {
+      var count = params.expectedLintedFiles.length;
+      var description =
+            count + (count === 1 ? ' file is' : ' files are') +
+            ' linted when ' +
+            'compiled = ' + params.compiled +
+            ', copied = ' + params.copied +
+            ', vendor = ' + params.vendor;
+      it(description, function () {
+        project.mimosaConfig.jscs = {
+          compiled: params.compiled,
+          copied: params.copied,
+          vendor: params.vendor,
+          rules: {
+            disallowDanglingUnderscores: true
+          }
+        };
+
+        // Set up some files, each of which will produce one warning if
+        // linted
+        project.files.assets.javascripts['copied.js'] =
+          'var _foo; // copied javascript file';
+        project.files.assets.javascripts['compiled.coffee'] =
+          '`var _foo // compiled coffeescript file`';
+        project.files.assets.javascripts.vendor['copied-vendor.js'] =
+          'var _foo // copied vendor javascript file';
+        project.files.assets.javascripts.vendor['compiled-vendor.coffee'] =
+          '`var _foo // compiled vendor coffeescript file`';
+
+        // Build and check warnings to see that the expected set of
+        // files where linted
+        return buildAndTest(project, function (violations) {
+          params.expectedLintedFiles.forEach(function (fileName) {
+            expectViolationsInFile(violations, fileName);
+          });
+
+          expect(violations.length).toBe(params.expectedLintedFiles.length);
+          violations.forEach(function (violation) {
+            expect(violation).toMatch(/Invalid dangling underscore/);
+          });
+        });
+      });
+    });
+  });
+
   describe('can exclude files from linting', function () {
     it('using a string', function () {
       project.mimosaConfig.jscs = {
@@ -330,81 +405,6 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
         return buildAndTest(project, function (violations) {
           expect(violations.length).toBe(1);
           expect(violations[0]).toMatch(/Missing line feed/);
-        });
-      });
-    });
-
-    describe('linting a project with a JS file, a coffeescript file, ' +
-             'a vendor JS file, and a vendor coffeescript file',
-             function ()
-    {
-      // Data driven tests that check that the correct files are linted
-      // depending on compiled, copied, vendor config properties
-
-      beforeEach(function () {
-        project.mimosaConfig.modules.push('coffeescript');
-      });
-
-      [
-        { compiled: false, copied: false, vendor: false,
-          expectedLintedFiles: [] },
-        { compiled: false, copied: true, vendor: false,
-          expectedLintedFiles: ['copied.js'] },
-        { compiled: true, copied: false, vendor: false,
-          expectedLintedFiles: ['compiled.coffee'] },
-        { compiled: true, copied: true, vendor: false,
-          expectedLintedFiles: ['copied.js', 'compiled.coffee'] },
-        { compiled: false, copied: false, vendor: true,
-          expectedLintedFiles: ['copied-vendor.js'] },
-        { compiled: false, copied: true, vendor: true,
-        expectedLintedFiles: ['copied.js', 'copied-vendor.js'] },
-        { compiled: true, copied: false, vendor: true,
-          expectedLintedFiles: ['compiled.coffee', 'copied-vendor.js'] },
-        { compiled: true, copied: true, vendor: true,
-          expectedLintedFiles: ['copied.js',
-                                'compiled.coffee',
-                                'copied-vendor.js'] }
-      ].forEach(function (params) {
-        var count = params.expectedLintedFiles.length;
-        var description =
-              count + (count === 1 ? ' file is' : ' files are') +
-              ' linted when ' +
-              'compiled = ' + params.compiled +
-              ', copied = ' + params.copied +
-              ', vendor = ' + params.vendor;
-        it(description, function () {
-          project.mimosaConfig.jscs = {
-            compiled: params.compiled,
-            copied: params.copied,
-            vendor: params.vendor,
-            rules: {
-              disallowDanglingUnderscores: true
-            }
-          };
-
-          // Set up some files, each of which will produce one warning if
-          // linted
-          project.files.assets.javascripts['copied.js'] =
-            'var _foo; // copied javascript file';
-          project.files.assets.javascripts['compiled.coffee'] =
-            '`var _foo // compiled coffeescript file`';
-          project.files.assets.javascripts.vendor['copied-vendor.js'] =
-            'var _foo // copied vendor javascript file';
-          project.files.assets.javascripts.vendor['compiled-vendor.coffee'] =
-            '`var _foo // compiled vendor coffeescript file`';
-
-          // Build and check warnings to see that the expected set of
-          // files where linted
-          return buildAndTest(project, function (violations) {
-            params.expectedLintedFiles.forEach(function (fileName) {
-              expectViolationsInFile(violations, fileName);
-            });
-
-            expect(violations.length).toBe(params.expectedLintedFiles.length);
-            violations.forEach(function (violation) {
-              expect(violation).toMatch(/Invalid dangling underscore/);
-            });
-          });
         });
       });
     });
