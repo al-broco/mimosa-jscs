@@ -26,7 +26,8 @@ var JSCS_VERSIONS_TO_TEST = [
   '1.4.5',
   '1.4.4',
   '1.4.3',
-  '1.4.0'
+  '1.4.0',
+  '1.3.0'
 ];
 
 describe('mimosa-jscs', function () {
