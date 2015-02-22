@@ -389,7 +389,7 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
          });
 
       it('can lint using a preset', function () {
-        project.mimosaConfig.jscs = { rules: { preset: 'crockford' } };
+        project.mimosaConfig.jscs = { rules: { preset: 'jquery' } };
 
         project.files.assets.javascripts['main.js'] = 'x=1';
 
