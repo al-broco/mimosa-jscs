@@ -11,7 +11,10 @@ var JSCS_VERSIONS_TO_TEST = [
   '1.7.3',
   '1.7.2',
   '1.7.1',
-  '1.7.0'
+  '1.7.0',
+  '1.6.2',
+  '1.6.1',
+  '1.6.0'
 ];
 
 describe('mimosa-jscs', function () {
@@ -409,42 +412,44 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
       });
     });
 
-    describe('supports the maxErrors option', function () {
-      it('which limits the number of violations reported', function () {
-        project.mimosaConfig.jscs = {
-          rules: {
-            requireLineFeedAtFileEnd: true,
-            disallowDanglingUnderscores: true,
-            maxErrors: 1
-          }
-        };
+    if (semver.satisfies(jscsVersion, '>= 1.7.0')) {
+      describe('supports the maxErrors option', function () {
+        it('which limits the number of violations reported', function () {
+          project.mimosaConfig.jscs = {
+            rules: {
+              requireLineFeedAtFileEnd: true,
+              disallowDanglingUnderscores: true,
+              maxErrors: 1
+            }
+          };
 
-        project.files.assets.javascripts['main.js'] = 'var _foo;';
+          project.files.assets.javascripts['main.js'] = 'var _foo;';
 
-        return buildAndTest(project, function (violations) {
-          expect(violations.length).toBe(1);
+          return buildAndTest(project, function (violations) {
+            expect(violations.length).toBe(1);
+          });
+        });
+
+        it('which applies per project and not per file in build mode',
+           function ()
+        {
+          project.mimosaConfig.jscs = {
+            rules: {
+              requireLineFeedAtFileEnd: true,
+              disallowDanglingUnderscores: true,
+              maxErrors: 1
+            }
+          };
+
+          project.files.assets.javascripts['file1.js'] = 'var _foo;';
+          project.files.assets.javascripts['file2.js'] = 'var _foo;';
+
+          return buildAndTest(project, function (violations) {
+            expect(violations.length).toBe(1);
+          });
         });
       });
-
-      it('which applies per project and not per file in build mode',
-         function ()
-      {
-        project.mimosaConfig.jscs = {
-          rules: {
-            requireLineFeedAtFileEnd: true,
-            disallowDanglingUnderscores: true,
-            maxErrors: 1
-          }
-        };
-
-        project.files.assets.javascripts['file1.js'] = 'var _foo;';
-        project.files.assets.javascripts['file2.js'] = 'var _foo;';
-
-        return buildAndTest(project, function (violations) {
-          expect(violations.length).toBe(1);
-        });
-      });
-    });
+    }
 
     if (semver.satisfies(jscsVersion, '>= 1.7.3')) {
       it('supports the esnext option which enables ES6 parsing', function () {

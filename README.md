@@ -174,6 +174,9 @@ following message:
   [1.7.2](https://github.com/jscs-dev/node-jscs/tree/v1.7.2),
   [1.7.1](https://github.com/jscs-dev/node-jscs/tree/v1.7.1),
   [1.7.0](https://github.com/jscs-dev/node-jscs/tree/v1.7.0).
+* [1.6.2](https://github.com/jscs-dev/node-jscs/tree/v1.6.2),
+  [1.6.1](https://github.com/jscs-dev/node-jscs/tree/v1.6.1),
+  [1.6.0](https://github.com/jscs-dev/node-jscs/tree/v1.6.0).
 
 This module has been tested with Mimosa version 2.3.17 but should work
 with other versions of Mimosa as well.
