@@ -197,10 +197,36 @@ function isFileExcludedBasedOnName(moduleConfig, absolutePath, relativePath) {
 function processFile(moduleConfig, file) {
   var jscs = loadJscs(moduleConfig);
 
-  var errors = jscs.checkString(file.outputFileText, file.inputFileName);
-  errors.getErrorList().forEach(function (error) {
+  var errors = checkString(jscs, file.outputFileText, file.inputFileName);
+  errors.forEach(function (error) {
     logJscsError(file.inputFileName, error);
   });
+}
+
+/**
+ * JSCS lints the contents of a file.
+ */
+function checkString(jscs, string, inputFileName) {
+  try {
+    var errors = jscs.checkString(string, inputFileName);
+    return errors.getErrorList();
+  } catch (error) {
+    // Early JSCS versions throw an exception on syntax errors, later
+    // versions report an error. For consistency, convert syntax error
+    // exceptions to errors.
+    var match = /Syntax error at .*: Line (\d): (.*)/.exec(error);
+    if (match) {
+      return [
+        {
+          message: match[2],
+          line: match[1]
+        }
+      ];
+    } else {
+      // Unexpected exception, rethrow
+      throw error;
+    }
+  }
 }
 
 /**

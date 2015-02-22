@@ -14,7 +14,15 @@ var JSCS_VERSIONS_TO_TEST = [
   '1.7.0',
   '1.6.2',
   '1.6.1',
-  '1.6.0'
+  '1.6.0',
+  '1.5.9',
+  '1.5.8',
+  '1.5.7',
+  '1.5.6',
+  '1.5.4',
+  '1.5.3',
+  '1.5.2',
+  '1.5.1'
 ];
 
 describe('mimosa-jscs', function () {
@@ -384,7 +392,8 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
            project.files.assets.javascripts['main.js'] = 'malformed code';
 
            return buildAndTest(project, function (violations) {
-             expect(violations).toNotEqual([]);
+             expect(violations.length).toBe(1);
+             expect(violations[0]).toMatch(/Unexpected identifier/);
            });
          });
 
