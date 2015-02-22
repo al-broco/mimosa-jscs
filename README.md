@@ -185,6 +185,10 @@ following message:
   [1.5.3](https://github.com/jscs-dev/node-jscs/tree/v1.5.3),
   [1.5.2](https://github.com/jscs-dev/node-jscs/tree/v1.5.2),
   [1.5.1](https://github.com/jscs-dev/node-jscs/tree/v1.5.1).
+* [1.4.5](https://github.com/jscs-dev/node-jscs/tree/v1.4.5),
+  [1.4.4](https://github.com/jscs-dev/node-jscs/tree/v1.4.4),
+  [1.4.3](https://github.com/jscs-dev/node-jscs/tree/v1.4.3),
+  [1.4.0](https://github.com/jscs-dev/node-jscs/tree/v1.4.0).
 
 This module has been tested with Mimosa version 2.3.17 but should work
 with other versions of Mimosa as well.
