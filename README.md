@@ -191,6 +191,14 @@ with other versions of Mimosa as well.
 Version history
 ---------------
 
+* **[2.0.0](https://github.com/al-broco/mimosa-jscs/tree/v2.0.0)**
+  JSCS is now an npm peer dependency which makes it possible for a
+  user to choose JSCS version. Created unit tests for compatibility
+  with JSCS versions from 1.3.0 up to 1.11.3. `package.json` contains
+  a whitelist listing compatible versions.
+
+  Major version bump because of the switch to a peer dependency for
+  JSCS.
 * **[1.1.0](https://github.com/al-broco/mimosa-jscs/tree/v1.1.0)**
   Support JSCS option excludeFiles.
 * **[1.0.4](https://github.com/al-broco/mimosa-jscs/tree/v1.0.4)**
