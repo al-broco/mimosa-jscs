@@ -2,7 +2,7 @@ mimosa-jscs
 ===========
 
 This is a [Mimosa](http://mimosa.io) module for linting Javascript
-code using [JSCS](https://github.com/jscs-dev/node-jscs/tree/v1.8.1).
+code using [JSCS](http://jscs.info/).
 
 Installation
 ------------
@@ -15,10 +15,10 @@ Configuration
 -------------
 
 To customize the linting you need to add a `jscs` configuration to
-your project's `mimosa-config`. `mimosa-jscs` is configured similarly
-as [Mimosa's built-in linting
-tools](http://mimosa.io/configuration.html#lint). The configuration
-options and the default values are as follows:
+your project's `mimosa-config`. `mimosa-jscs` is configured in the
+same way as other Mimosa linting tools such as
+[mimosa-jshint](https://github.com/dbashford/mimosa-jshint). The
+configuration options and the default values are as follows:
 
     jscs: {
         exclude: [],
@@ -32,12 +32,11 @@ options and the default values are as follows:
 Which files are linted are controlled by the `jscs.exclude`,
 `jscs.compiled`, `jscs.copied`, and `jscs.vendor` options. These
 options work just like the corresponding options for the
-[JSHint Mimosa plugin](http://mimosa.io/configuration.html#lint).
+[JSHint Mimosa plugin](https://github.com/dbashford/mimosa-jshint).
 
 To configure JSCS, set either the `jscs.rules` property, the
 `jscs.configFile` property, or both. JSCS configuration options are
-described in detail in [the JSCS
-documentation](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#options). For
+described in detail in [the JSCS documentation](http://jscs.info). For
 example, adding the following to your Mimosa config will make JSCS
 check that files end with a newline:
 
@@ -51,34 +50,29 @@ check that files end with a newline:
 its contents. The following configuration options have been verified
 to work:
 
-* [Individual rules](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#rules).
-* [`preset`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#preset).
-* [`additionalRules`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#additionalrules).
-  Rule paths are relative to the project root.
-* [`excludeFiles`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#excludefiles).
-  In addition to the `jscs.exclude` property described above,
-  `mimosa-jscs` also supports excluding files using `excludeFiles` in
-  the JSCS configuration. This can come in handy if you want to share
-  a JSCS configuration file between Mimosa and (for instance) an
-  editor or IDE. Paths are relative to the project root.
-* [`maxErrors`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#maxerrors). In
-  build mode, `maxErrors` is the maximum number of reported violations
-  per build. In watch mode, `maxErrors` is per file.
-* [`esnext`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#esnext).
+* [Individual rules](http://jscs.info/rules.html).
+* `preset`.
+* `additionalRules`. Rule paths are relative to the project root.
+* `excludeFiles`. In addition to the `jscs.exclude` property described
+  above, `mimosa-jscs` also supports excluding files using
+  `excludeFiles` in the JSCS configuration. This can come in handy if
+  you want to share a JSCS configuration file between Mimosa and (for
+  instance) an editor or IDE. Paths are relative to the project root.
+* `maxErrors`. In build mode, `maxErrors` is the maximum number of
+  reported violations per build. In watch mode, `maxErrors` is per
+  file.
+* `esnext`.
 
-The option
-[`fileExtensions`](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#fileextensions)
-is currently ignored.
+The option `fileExtensions` is currently ignored.
 
 `jscs.configFile` is the file name of a JSCS configuration file,
-absolute or relative to the project's root. In contrast to [running
-JSCS from the command
-line](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#cli),
-`mimosa-jscs` will not search other directories outside of your
-project for a configuration file. In particular, it wll not search
-your home directory or the project directory's ancestors for a file
-named `.jscsrc` or `.jscs.json`. This is to make building independent
-of external files not part of the Mimosa project.
+absolute or relative to the project's root. In contrast to running
+JSCS from the command line, `mimosa-jscs` will not search other
+directories outside of your project for a configuration file. In
+particular, it wll not search your home directory or the project
+directory's ancestors for a file named `.jscsrc` or `.jscs.json`. This
+is to make building independent of external files not part of the
+Mimosa project.
 
 `mimosa-jscs` reads configuration files the same way as JSCS does,
 which means that the file format is determined from the file name:
@@ -120,8 +114,7 @@ preset and also check that all comments starts with a capital letter:
       }
     }
 
-To disable a rule, set it to `null` (this is [standard JSCS
-behavior](https://github.com/jscs-dev/node-jscs/tree/v1.8.1#example-1)).
+To disable a rule, set it to `null` (this is standard JSCS behavior).
 The following configration will lint using the Crockford preset but
 disable indentation checking:
 
@@ -154,7 +147,7 @@ undocumented JSCS API that could theoretically change between any two
 JSCS versions.
 
 By default, `mimosa-jscs` uses the latest version of JSCS it has been
-verified to work with, currently version 1.8.1. To use a different
+verified to work with, currently version 1.11.3. To use a different
 JSCS version add JSCS as dependency to your project. For example, to
 use JSCS version 1.8.0 type the following in your project root:
 
@@ -167,35 +160,30 @@ following message:
     npm ERR! peerinvalid The package jscs does not satisfy its siblings' peerDependencies requirements!
 
 `mimosa-jscs` works with the following JSCS versions:
-
-* [1.11.0](https://github.com/jscs-dev/node-jscs/tree/v1.11.0),
-  [1.11.1](https://github.com/jscs-dev/node-jscs/tree/v1.11.1),
-  [1.11.2](https://github.com/jscs-dev/node-jscs/tree/v1.11.2),
-  [1.11.3](https://github.com/jscs-dev/node-jscs/tree/v1.11.3).
-* [1.10.0](https://github.com/jscs-dev/node-jscs/tree/v1.10.0).
-* [1.9.0](https://github.com/jscs-dev/node-jscs/tree/v1.9.0),
-* [1.8.0](https://github.com/jscs-dev/node-jscs/tree/v1.8.0),
-  [1.8.1](https://github.com/jscs-dev/node-jscs/tree/v1.8.1).
-* [1.7.3](https://github.com/jscs-dev/node-jscs/tree/v1.7.3),
-  [1.7.2](https://github.com/jscs-dev/node-jscs/tree/v1.7.2),
-  [1.7.1](https://github.com/jscs-dev/node-jscs/tree/v1.7.1),
-  [1.7.0](https://github.com/jscs-dev/node-jscs/tree/v1.7.0).
-* [1.6.2](https://github.com/jscs-dev/node-jscs/tree/v1.6.2),
-  [1.6.1](https://github.com/jscs-dev/node-jscs/tree/v1.6.1),
-  [1.6.0](https://github.com/jscs-dev/node-jscs/tree/v1.6.0).
-* [1.5.9](https://github.com/jscs-dev/node-jscs/tree/v1.5.9),
-  [1.5.8](https://github.com/jscs-dev/node-jscs/tree/v1.5.8),
-  [1.5.7](https://github.com/jscs-dev/node-jscs/tree/v1.5.7),
-  [1.5.6](https://github.com/jscs-dev/node-jscs/tree/v1.5.6),
-  [1.5.4](https://github.com/jscs-dev/node-jscs/tree/v1.5.4),
-  [1.5.3](https://github.com/jscs-dev/node-jscs/tree/v1.5.3),
-  [1.5.2](https://github.com/jscs-dev/node-jscs/tree/v1.5.2),
-  [1.5.1](https://github.com/jscs-dev/node-jscs/tree/v1.5.1).
-* [1.4.5](https://github.com/jscs-dev/node-jscs/tree/v1.4.5),
-  [1.4.4](https://github.com/jscs-dev/node-jscs/tree/v1.4.4),
-  [1.4.3](https://github.com/jscs-dev/node-jscs/tree/v1.4.3),
-  [1.4.0](https://github.com/jscs-dev/node-jscs/tree/v1.4.0).
-* [1.3.0](https://github.com/jscs-dev/node-jscs/tree/v1.3.0).
+[1.3.0](https://github.com/jscs-dev/node-jscs/tree/v1.3.0),
+[1.4.0](https://github.com/jscs-dev/node-jscs/tree/v1.4.0),
+[1.4.3](https://github.com/jscs-dev/node-jscs/tree/v1.4.3),
+[1.4.4](https://github.com/jscs-dev/node-jscs/tree/v1.4.4),
+[1.4.5](https://github.com/jscs-dev/node-jscs/tree/v1.4.5),
+[1.5.1](https://github.com/jscs-dev/node-jscs/tree/v1.5.1),
+[1.5.2](https://github.com/jscs-dev/node-jscs/tree/v1.5.2),
+[1.5.3](https://github.com/jscs-dev/node-jscs/tree/v1.5.3),
+[1.5.4](https://github.com/jscs-dev/node-jscs/tree/v1.5.4),
+[1.5.6](https://github.com/jscs-dev/node-jscs/tree/v1.5.6),
+[1.5.7](https://github.com/jscs-dev/node-jscs/tree/v1.5.7),
+[1.5.8](https://github.com/jscs-dev/node-jscs/tree/v1.5.8),
+[1.5.9](https://github.com/jscs-dev/node-jscs/tree/v1.5.9),
+[1.6.0](https://github.com/jscs-dev/node-jscs/tree/v1.6.0),
+[1.6.1](https://github.com/jscs-dev/node-jscs/tree/v1.6.1),
+[1.6.2](https://github.com/jscs-dev/node-jscs/tree/v1.6.2),
+[1.7.0](https://github.com/jscs-dev/node-jscs/tree/v1.7.0),
+[1.7.1](https://github.com/jscs-dev/node-jscs/tree/v1.7.1),
+[1.7.2](https://github.com/jscs-dev/node-jscs/tree/v1.7.2),
+[1.7.3](https://github.com/jscs-dev/node-jscs/tree/v1.7.3),
+[1.8.0](https://github.com/jscs-dev/node-jscs/tree/v1.8.0),
+[1.8.1](https://github.com/jscs-dev/node-jscs/tree/v1.8.1),
+[1.9.0](https://github.com/jscs-dev/node-jscs/tree/v1.9.0),
+1.10.0, 1.11.0, 1.11.1, 1.11.2, and 1.11.3.
 
 This module has been tested with Mimosa version 2.3.17 but should work
 with other versions of Mimosa as well.
