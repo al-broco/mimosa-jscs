@@ -168,6 +168,7 @@ following message:
 
 `mimosa-jscs` works with the following JSCS versions:
 
+* [1.10.0](https://github.com/jscs-dev/node-jscs/tree/v1.10.0),
 * [1.9.0](https://github.com/jscs-dev/node-jscs/tree/v1.9.0),
 * [1.8.0](https://github.com/jscs-dev/node-jscs/tree/v1.8.0),
   [1.8.1](https://github.com/jscs-dev/node-jscs/tree/v1.8.1).
