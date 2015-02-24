@@ -540,6 +540,60 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
         });
       });
     });
+
+    if (semver.satisfies(jscsVersion, '>= 1.8.0')) {
+      describe('supports the plugins option and can load a plugin', function ()
+      {
+        it('from a relative path', function () {
+          var PLUGIN_FILE_CONTENTS =
+                'module.exports = function (conf) {\n' +
+                '  conf.registerPreset(\'preset-defined-in-plugin\',\n' +
+                '                      { requireLineFeedAtFileEnd: true });\n' +
+                '};\n';
+
+          project.mimosaConfig.jscs = {
+            rules: {
+              plugins: ['./plugins/plugin.js'],
+              preset: 'preset-defined-in-plugin'
+            }
+          };
+
+          project.files.plugins = {
+            'plugin.js': PLUGIN_FILE_CONTENTS
+          };
+
+          project.files.assets.javascripts['main.js'] = '// No line feed';
+
+          return buildAndTest(project, function (violations) {
+            expect(violations.length).toBe(1);
+            expect(violations[0]).toMatch(/Missing line feed/);
+          });
+        });
+
+        it('published as an npm module', function () {
+          project.mimosaConfig.jscs = {
+            rules: {
+              plugins: ['jscs-jsdoc'],
+              jsDoc: {
+                checkAnnotations: true
+              }
+            }
+          };
+
+          project.files.assets.javascripts['main.js'] =
+            '/**\n' +
+            '* @lalala\n' +
+            '*/\n' +
+            'function _f() {}\n';
+
+          return project.exec('npm', 'install', 'jscs-jsdoc@0.4.5')
+            .then(buildAndTest.bind(undefined, project, function (violations) {
+              expect(violations.length).toBe(1);
+              expect(violations[0]).toMatch(/unavailable tag lalala/);
+            }));
+        });
+      });
+    }
   });
 });
 

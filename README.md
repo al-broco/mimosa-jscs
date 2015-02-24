@@ -62,6 +62,7 @@ to work:
   reported violations per build. In watch mode, `maxErrors` is per
   file.
 * `esnext`.
+* `plugins`. Paths are relative to the project root.
 
 The option `fileExtensions` is currently ignored.
 
