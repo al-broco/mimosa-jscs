@@ -12,7 +12,8 @@ exports.defaults = function () {
       exclude: [],
       compiled: true,
       copied: true,
-      vendor: false
+      vendor: false,
+      executeOnCompiledCode: true
     }
   };
 };
@@ -23,6 +24,28 @@ exports.validate = function (config, validators) {
   var errors = [];
 
   if (validators.ifExistsIsObject(errors, 'jscs config', config.jscs)) {
+
+    if (validators.ifExistsIsBoolean(errors,
+                                     'jscs.executeOnCompiledCode',
+                                     config.jscs.executeOnCompiledCode)) {
+
+      // Determine what step to run JSCS at and what
+      // text to run it on. Create specific function
+      // to return value rather than run if stmt on
+      // flag for each file.
+      if (config.jscs.executeOnCompiledCode) {
+        config.jscs.workflowStep = 'afterCompile';
+        config.jscs.textToProcess = function(file) {
+          return file.outputFileText;
+        };
+      } else {
+        config.jscs.workflowStep = 'beforeCompile';
+        config.jscs.textToProcess = function(file) {
+          return file.inputFileText;
+        };
+      }
+    }
+
     // Note: Call below will modify config to have an
     // jscs.excludeRegex and change jscs.exclude to have absolute
     // paths

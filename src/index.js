@@ -12,11 +12,11 @@ function registration (mimosaConfig, register) {
   var extensions = getFileExtensions(mimosaConfig);
   if (extensions.length > 0) {
     register(['buildFile'],
-             'afterCompile',
+             mimosaConfig.jscs.workflowStep,
              onMimosaBuildWorkflowCallback,
              extensions);
     register(['add', 'update'],
-             'afterCompile',
+             mimosaConfig.jscs.workflowStep,
              onMimosaWatchWorkflowCallback,
              extensions);
   }
@@ -140,7 +140,8 @@ function processFiles(mimosaConfig, files) {
  * configuration.
  */
 function shouldProcessFile(mimosaConfig, file) {
-  if (!file.outputFileText) {
+  var text = mimosaConfig.jscs.textToProcess(file);
+  if (!text) {
     return false;
   }
 
@@ -196,8 +197,8 @@ function isFileExcludedBasedOnName(moduleConfig, absolutePath, relativePath) {
  */
 function processFile(moduleConfig, file) {
   var jscs = loadJscs(moduleConfig);
-
-  var errors = checkString(jscs, file.outputFileText, file.inputFileName);
+  var text = moduleConfig.textToProcess(file);
+  var errors = checkString(jscs, text, file.inputFileName);
   errors.forEach(function (error) {
     logJscsError(file.inputFileName, error);
   });
