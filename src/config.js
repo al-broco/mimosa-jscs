@@ -13,7 +13,7 @@ exports.defaults = function () {
       compiled: true,
       copied: true,
       vendor: false,
-      executeOnCompiledCode: true
+      executeAfterCompile: true
     }
   };
 };
@@ -26,14 +26,14 @@ exports.validate = function (config, validators) {
   if (validators.ifExistsIsObject(errors, 'jscs config', config.jscs)) {
 
     if (validators.ifExistsIsBoolean(errors,
-                                     'jscs.executeOnCompiledCode',
-                                     config.jscs.executeOnCompiledCode)) {
+                                     'jscs.executeAfterCompile',
+                                     config.jscs.executeAfterCompile)) {
 
       // Determine what step to run JSCS at and what
       // text to run it on. Create specific function
       // to return value rather than run if stmt on
       // flag for each file.
-      if (config.jscs.executeOnCompiledCode) {
+      if (config.jscs.executeAfterCompile) {
         config.jscs.workflowStep = 'afterCompile';
         config.jscs.textToProcess = function(file) {
           return file.outputFileText;

@@ -25,7 +25,7 @@ configuration options and the default values are as follows:
         compiled: true,
         copied: true,
         vendor: false,
-        executeOnCompiledCode: true,
+        executeAfterCompile: true,
         configFile: undefined,
         rules: {}
     }
@@ -35,7 +35,7 @@ Which files are linted are controlled by the `jscs.exclude`,
 options work just like the corresponding options for the
 [JSHint Mimosa plugin](https://github.com/dbashford/mimosa-jshint).
 
-`executeOnCompiledCode` determines whether JSCS runs on code before
+`executeAfterCompile` determines whether JSCS runs on code before
 or after it is compiled. This defaults to `true` which means that
 JSCS runs on compiled code. So, for instance, it would not run on
 CoffeeScript, instead it would run on the compiled JavaScript. You
