@@ -25,6 +25,7 @@ configuration options and the default values are as follows:
         compiled: true,
         copied: true,
         vendor: false,
+        executeOnCompiledCode: true,
         configFile: undefined,
         rules: {}
     }
@@ -33,6 +34,15 @@ Which files are linted are controlled by the `jscs.exclude`,
 `jscs.compiled`, `jscs.copied`, and `jscs.vendor` options. These
 options work just like the corresponding options for the
 [JSHint Mimosa plugin](https://github.com/dbashford/mimosa-jshint).
+
+`executeOnCompiledCode` determines whether JSCS runs on code before
+or after it is compiled. This defaults to `true` which means that
+JSCS runs on compiled code. So, for instance, it would not run on
+CoffeeScript, instead it would run on the compiled JavaScript. You
+may find you want to run on pre-compiled code. Some compilers, like
+[Babel](http://www.babeljs.io) will transform the style of the code
+when it compiles it.  If running on the compiled output of Babel,
+JSCS will have many problems that cannot be avoided.
 
 To configure JSCS, set either the `jscs.rules` property, the
 `jscs.configFile` property, or both. JSCS configuration options are
