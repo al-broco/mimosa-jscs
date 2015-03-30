@@ -79,6 +79,10 @@ describe('mimosa-jscs', function () {
       {
         desc: 'where config.jscs.configFile is not an existing file',
         config: { configFile: 'nothing.json' }
+      },
+      {
+        desc: 'where config.jscs.executeAfterCompile is not a boolean',
+        config: { executeAfterCompile: 'true' }
       }
     ].forEach(function (data) {
       it(data.desc, function () {
@@ -242,6 +246,95 @@ describe('mimosa-jscs', function () {
 
         return buildAndTest(project, function (violations) {
           expect(violations).toEqual([]);
+        });
+      });
+    });
+  });
+
+  describe('when linting with executeAfterCompile', function () {
+    describe('set to false', function () {
+      beforeEach(function () {
+        project.mimosaConfig.jscs = { executeAfterCompile: false };
+      });
+
+      it('javascript files will be checked before compilation', function () {
+        // Babel will insert a "use strict" statement (with double
+        // quotes) at the top of the compiled file
+        project.mimosaConfig.modules.push('babel');
+        project.mimosaConfig.jscs.rules = {
+          validateQuoteMarks: '\''
+        };
+
+        project.files.assets.javascripts['babel.js'] = '// Babel src';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations).toEqual([]);
+        });
+      });
+
+      it('coffeescript files will be checked before compilation', function () {
+        project.mimosaConfig.modules.push('coffeescript');
+        project.mimosaConfig.jscs = { executeAfterCompile: false };
+
+        project.files.assets.javascripts['valid_coffee.coffee'] =
+          '`var _foo`'; // valid coffeescript, invalid javascript
+
+        return buildAndTest(project, function (violations) {
+          expectViolationsInFile(violations, 'valid_coffee.coffee');
+          expect(violations.length).toBe(1);
+          expect(violations[0]).toMatch(/Unexpected token/);
+        });
+      });
+    });
+
+    describe('set to true', function () {
+      beforeEach(function () {
+        project.mimosaConfig.jscs = { executeAfterCompile: true };
+      });
+
+      it('javascript files will be checked after compilation', function () {
+        // Babel will insert a "use strict" statement (with double
+        // quotes) at the top of the compiled file
+        project.mimosaConfig.modules.push('babel');
+        project.mimosaConfig.jscs.rules = {
+          validateQuoteMarks: '\''
+        };
+
+        project.files.assets.javascripts['babel.js'] = '// Babel src';
+
+        return buildAndTest(project, function (violations) {
+          expectViolationsInFile(violations, 'babel.js');
+          expect(violations.length).toBe(1);
+          expect(violations[0]).toMatch(/Invalid quote mark/);
+        });
+      });
+
+      it('coffeescript files will be checked after compilation', function () {
+        project.mimosaConfig.modules.push('coffeescript');
+        project.mimosaConfig.jscs = { executeAfterCompile: true };
+
+        project.files.assets.javascripts['valid_coffee.coffee'] =
+          '`var _foo`'; // valid coffeescript, invalid javascript
+
+        return buildAndTest(project, function (violations) {
+          expect(violations).toEqual([]);
+        });
+      });
+    });
+
+    describe('not set', function () {
+      it('javascript files will be checked after compilation', function () {
+        // Babel will insert a "use strict" statement (with double
+        // quotes) at the top of the compiled file
+        project.mimosaConfig.modules.push('babel');
+        project.mimosaConfig.jscs = { rules: { validateQuoteMarks: '\'' } };
+
+        project.files.assets.javascripts['babel.js'] = '// Babel src';
+
+        return buildAndTest(project, function (violations) {
+          expectViolationsInFile(violations, 'babel.js');
+          expect(violations.length).toBe(1);
+          expect(violations[0]).toMatch(/Invalid quote mark/);
         });
       });
     });
