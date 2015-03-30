@@ -192,6 +192,10 @@ other versions of Mimosa as well.
 Version history
 ---------------
 
+* **[2.1.0](https://github.com/al-broco/mimosa-jscs/tree/v2.1.0)**
+  Added JSCS v1.12.0 to list of compatible versions. Removed Mimosa
+  `placeholder` config property to be compatible with upcoming Mimosa
+  v3.0.0. Minor documentation updates.
 * **[2.0.0](https://github.com/al-broco/mimosa-jscs/tree/v2.0.0)**
   JSCS is now an npm peer dependency which makes it possible for a
   user to choose JSCS version. Created unit tests for compatibility
