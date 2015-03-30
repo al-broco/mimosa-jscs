@@ -186,8 +186,8 @@ following message:
 [1.9.0](https://github.com/jscs-dev/node-jscs/tree/v1.9.0),
 1.10.0, 1.11.0, 1.11.1, 1.11.2, and 1.11.3.
 
-This module has been tested with Mimosa version 2.3.17 but should work
-with other versions of Mimosa as well.
+This module has been tested with Mimosa 2.3.x but should work with
+other versions of Mimosa as well.
 
 Version history
 ---------------
