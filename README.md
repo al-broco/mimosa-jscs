@@ -202,6 +202,11 @@ other versions of Mimosa as well.
 Version history
 ---------------
 
+* **[2.2.0](https://github.com/al-broco/mimosa-jscs/tree/v2.2.0)**
+  Added configuration option `executeAfterCompile` that makes it
+  possible to configure if style of compiled resources are checked
+  before or after compilation. Useful when compiling with
+  Babel. Requested and implemented by dbashford.
 * **[2.1.0](https://github.com/al-broco/mimosa-jscs/tree/v2.1.0)**
   Added JSCS v1.12.0 to list of compatible versions. Removed Mimosa
   `placeholder` config property to be compatible with upcoming Mimosa
