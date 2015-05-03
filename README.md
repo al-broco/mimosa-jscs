@@ -73,6 +73,7 @@ to work:
   file.
 * `esnext`.
 * `plugins`. Paths are relative to the project root.
+* `verbose`.
 
 The option `fileExtensions` is currently ignored.
 

@@ -689,6 +689,24 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
         });
       });
     }
+
+    if (semver.satisfies(jscsVersion, '>= 1.13.0')) {
+      it('logs violated rule name if verbose option is set', function () {
+        project.mimosaConfig.jscs = {
+          rules: {
+            verbose: true,
+            requireLineFeedAtFileEnd: true
+          }
+        };
+
+        project.files.assets.javascripts['main.js'] = '// no line feed';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations).toNotEqual([]);
+          expect(violations[0]).toMatch(/requireLineFeedAtFileEnd:/);
+        });
+      });
+    }
   });
 });
 
