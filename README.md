@@ -203,7 +203,7 @@ other versions of Mimosa as well.
 Version history
 ---------------
 
-* **latest on dev branch**
+* **[2.3.0](https://github.com/al-broco/mimosa-jscs/tree/v2.3.0)**
   Added JSCS v1.13.0 and v1.13.1 to list of compatible versions.
 * **[2.2.0](https://github.com/al-broco/mimosa-jscs/tree/v2.2.0)**
   Added configuration option `executeAfterCompile` that makes it
