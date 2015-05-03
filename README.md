@@ -194,7 +194,7 @@ following message:
 [1.8.0](https://github.com/jscs-dev/node-jscs/tree/v1.8.0),
 [1.8.1](https://github.com/jscs-dev/node-jscs/tree/v1.8.1),
 [1.9.0](https://github.com/jscs-dev/node-jscs/tree/v1.9.0),
-1.10.0, 1.11.0, 1.11.1, 1.11.2, 1.11.3, and 1.12.0.
+1.10.0, 1.11.0, 1.11.1, 1.11.2, 1.11.3, 1.12.0, and 1.13.0.
 
 This module has been tested with Mimosa 2.3.x but should work with
 other versions of Mimosa as well.
@@ -202,6 +202,8 @@ other versions of Mimosa as well.
 Version history
 ---------------
 
+* **latest on dev branch**
+  Added JSCS v1.13.0 to list of compatible versions.
 * **[2.2.0](https://github.com/al-broco/mimosa-jscs/tree/v2.2.0)**
   Added configuration option `executeAfterCompile` that makes it
   possible to configure if style of compiled resources are checked
