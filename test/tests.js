@@ -147,6 +147,7 @@ describe('mimosa-jscs', function () {
           copied: params.copied,
           vendor: params.vendor,
           rules: {
+            verbose: true,
             disallowDanglingUnderscores: true
           }
         };
@@ -171,7 +172,7 @@ describe('mimosa-jscs', function () {
 
           expect(violations.length).toBe(params.expectedLintedFiles.length);
           violations.forEach(function (violation) {
-            expect(violation).toMatch(/Invalid dangling underscore/);
+            expect(violation).toMatch(/disallowDanglingUnderscores/);
           });
         });
       });
@@ -183,6 +184,7 @@ describe('mimosa-jscs', function () {
       project.mimosaConfig.jscs = {
         exclude: ['javascripts/to-be-excluded.js'],
         rules: {
+          verbose: true,
           requireLineFeedAtFileEnd: true
         }
       };
@@ -193,7 +195,7 @@ describe('mimosa-jscs', function () {
       return buildAndTest(project, function (violations) {
         expectViolationsInFile(violations, 'to-not-be-excluded.js');
         expect(violations.length).toBe(1);
-        expect(violations[0]).toMatch(/Missing line feed/);
+        expect(violations[0]).toMatch(/requireLineFeedAtFileEnd/);
       });
     });
 
@@ -201,6 +203,7 @@ describe('mimosa-jscs', function () {
       project.mimosaConfig.jscs = {
         exclude: [/to-be-excluded/],
         rules: {
+          verbose: true,
           requireLineFeedAtFileEnd: true
         }
       };
@@ -211,7 +214,7 @@ describe('mimosa-jscs', function () {
       return buildAndTest(project, function (violations) {
         expectViolationsInFile(violations, 'to-not-be-excluded.js');
         expect(violations.length).toBe(1);
-        expect(violations[0]).toMatch(/Missing line feed/);
+        expect(violations[0]).toMatch(/requireLineFeedAtFileEnd/);
       });
     });
 
@@ -219,6 +222,7 @@ describe('mimosa-jscs', function () {
       it('matching a file name exactly', function () {
         project.mimosaConfig.jscs = {
           rules: {
+            verbose: true,
             excludeFiles: ['javascripts/to-be-excluded.js'],
             requireLineFeedAtFileEnd: true
           }
@@ -231,7 +235,7 @@ describe('mimosa-jscs', function () {
         return buildAndTest(project, function (violations) {
           expectViolationsInFile(violations, 'to-not-be-excluded.js');
           expect(violations.length).toBe(1);
-          expect(violations[0]).toMatch(/Missing line feed/);
+          expect(violations[0]).toMatch(/requireLineFeedAtFileEnd/);
         });
       });
 
@@ -298,6 +302,7 @@ describe('mimosa-jscs', function () {
         // quotes) at the top of the compiled file
         project.mimosaConfig.modules.push('babel');
         project.mimosaConfig.jscs.rules = {
+          verbose: true,
           validateQuoteMarks: '\''
         };
 
@@ -306,7 +311,7 @@ describe('mimosa-jscs', function () {
         return buildAndTest(project, function (violations) {
           expectViolationsInFile(violations, 'babel.js');
           expect(violations.length).toBe(1);
-          expect(violations[0]).toMatch(/Invalid quote mark/);
+          expect(violations[0]).toMatch(/validateQuoteMarks/);
         });
       });
 
@@ -328,14 +333,19 @@ describe('mimosa-jscs', function () {
         // Babel will insert a "use strict" statement (with double
         // quotes) at the top of the compiled file
         project.mimosaConfig.modules.push('babel');
-        project.mimosaConfig.jscs = { rules: { validateQuoteMarks: '\'' } };
+        project.mimosaConfig.jscs = {
+          rules: {
+            verbose: true,
+            validateQuoteMarks: '\''
+          }
+        };
 
         project.files.assets.javascripts['babel.js'] = '// Babel src';
 
         return buildAndTest(project, function (violations) {
           expectViolationsInFile(violations, 'babel.js');
           expect(violations.length).toBe(1);
-          expect(violations[0]).toMatch(/Invalid quote mark/);
+          expect(violations[0]).toMatch(/validateQuoteMarks/);
         });
       });
     });
@@ -401,6 +411,7 @@ describe('mimosa-jscs', function () {
       project.mimosaConfig.jscs = {
         configFile: '.jscsrc',
         rules: {
+          verbose: true,
           disallowMultipleVarDecl: true
         }
       };
@@ -415,8 +426,10 @@ describe('mimosa-jscs', function () {
         var file1ViolationIdx =
               violations[0].indexOf('file1.js') !== -1 ? 0 : 1;
         var file2ViolationIdx = 1 - file1ViolationIdx;
-        expect(violations[file1ViolationIdx]).toMatch(/Missing line feed/);
-        expect(violations[file2ViolationIdx]).toMatch(/Multiple var decl/);
+        expect(violations[file1ViolationIdx])
+          .toMatch(/requireLineFeedAtFileEnd/);
+        expect(violations[file2ViolationIdx])
+          .toMatch(/disallowMultipleVarDecl/);
       });
     });
 
