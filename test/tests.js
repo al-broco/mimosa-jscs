@@ -679,28 +679,56 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
           });
         });
 
-        it('published as an npm module', function () {
-          project.mimosaConfig.jscs = {
-            rules: {
-              plugins: ['jscs-jsdoc'],
-              jsDoc: {
-                checkAnnotations: true
+        if (semver.neq(jscsVersion, '2.0.0')) {
+          // Preferred test for modules since it also tests that the
+          // module is actually running
+          it('published as an npm module (jscs-jsdoc)', function () {
+            project.mimosaConfig.jscs = {
+              rules: {
+                plugins: ['jscs-jsdoc'],
+                jsDoc: {
+                  checkAnnotations: true
+                }
               }
-            }
-          };
+            };
 
-          project.files.assets.javascripts['main.js'] =
-            '/**\n' +
-            '* @lalala\n' +
-            '*/\n' +
-            'function _f() {}\n';
+            project.files.assets.javascripts['main.js'] =
+              '/**\n' +
+              '* @lalala\n' +
+              '*/\n' +
+              'function _f() {}\n';
 
-          return project.exec('npm', 'install', 'jscs-jsdoc@0.4.5')
-            .then(buildAndTest.bind(undefined, project, function (violations) {
-              expect(violations.length).toBe(1);
-              expect(violations[0]).toMatch(/unavailable tag lalala/);
-            }));
-        });
+            return project.exec('npm', 'install', 'jscs-jsdoc@0.4.5')
+              .then(buildAndTest.bind(undefined,
+                                      project,
+                                      function (violations) {
+                expect(violations.length).toBe(1);
+                expect(violations[0]).toMatch(/unavailable tag lalala/);
+              }));
+          });
+        } else {
+          // Fallback tests for JSCS versions where there is no known
+          // compatible module that adds any rules
+          it('published as an npm module (jscs-teamcity-reporter)',
+             function () {
+            project.mimosaConfig.jscs = {
+              rules: {
+                plugins: ['jscs-teamcity-reporter']
+              }
+            };
+
+            project.files.assets.javascripts['main.js'] = '';
+
+            return project.exec('npm',
+                                'install',
+                                'jscs-teamcity-reporter@0.0.4')
+              .then(buildAndTest.bind(undefined,
+                                      project,
+                                      function (violations) {
+                expect(violations).toEqual([]);
+              }));
+          });
+        }
       });
     }
 
