@@ -6,6 +6,7 @@ var Promise = require('bluebird');
 var MimosaProject = require('./MimosaProject');
 
 var JSCS_VERSIONS_TO_TEST = [
+  '2.0.0',
   '1.13.1',
   '1.13.0',
   '1.12.0',
