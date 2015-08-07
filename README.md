@@ -81,7 +81,7 @@ The option `fileExtensions` is currently ignored.
 absolute or relative to the project's root. In contrast to running
 JSCS from the command line, `mimosa-jscs` will not search other
 directories outside of your project for a configuration file. In
-particular, it wll not search your home directory or the project
+particular, it will not search your home directory or the project
 directory's ancestors for a file named `.jscsrc` or `.jscs.json`. This
 is to make building independent of external files not part of the
 Mimosa project.
