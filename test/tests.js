@@ -438,11 +438,11 @@ describe('mimosa-jscs', function () {
       project.mimosaConfig.jscs = {
         configFile: '.jscsrc',
         rules: {
-          preset: null
+          requireLineFeedAtFileEnd: null
         }
       };
-      project.files['.jscsrc'] = '{ "preset": "crockford" }';
-      project.files.assets.javascripts['main.js'] = 'x=1;"ugly code"';
+      project.files['.jscsrc'] = '{ "requireLineFeedAtFileEnd": true }';
+      project.files.assets.javascripts['main.js'] = '// no line feed';
 
       return buildAndTest(project, function (violations) {
         expect(violations).toEqual([]);
