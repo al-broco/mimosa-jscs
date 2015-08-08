@@ -155,16 +155,22 @@ To lint using the Crockford preset, add the following to your
 Compatibility
 -------------
 
-Compatibility with JSCS is tricky since `mimosa-jscs` uses an
-undocumented JSCS API that could theoretically change between any two
-JSCS versions.
+By default `mimosa-jscs` uses the latest version of JSCS that is
+compatible with a version it has been tested with. Compatibility is
+according to [semver](http://semver.org/).
 
-By default, `mimosa-jscs` uses the latest version of JSCS it has been
-verified to work with, currently version 1.11.3. To use a different
-JSCS version add JSCS as dependency to your project. For example, to
-use JSCS version 1.8.0 type the following in your project root:
+JSCS' approach to versioning is explained in the [JSCS
+documentation](http://jscs.info/overview.html#versioning-semver). In
+short, changes in rules and presets that cause more (or less) code
+style violations to be reported are not considered breaking
+changes. To have better control of your JSCS linting you may want to
+use a specific version of JSCS.
 
-    npm install --save-dev jscs@1.8.0
+To use a specific JSCS version add JSCS as dependency to your
+project. For example, to use JSCS version 1.8.0 type the following in
+your project root:
+
+    npm install --save-dev --save-exact jscs@1.8.0
 
 If you try to use `mimosa-jscs` with a version of JSCS it has not been
 verified to be compatible with, `npm install` will fail with the
@@ -172,8 +178,8 @@ following message:
 
     npm ERR! peerinvalid The package jscs does not satisfy its siblings' peerDependencies requirements!
 
-`mimosa-jscs` works with the following JSCS versions:
-[1.3.0](https://github.com/jscs-dev/node-jscs/tree/v1.3.0),
+`mimosa-jscs` has been verified to work with the following JSCS
+versions: [1.3.0](https://github.com/jscs-dev/node-jscs/tree/v1.3.0),
 [1.4.0](https://github.com/jscs-dev/node-jscs/tree/v1.4.0),
 [1.4.3](https://github.com/jscs-dev/node-jscs/tree/v1.4.3),
 [1.4.4](https://github.com/jscs-dev/node-jscs/tree/v1.4.4),
@@ -195,9 +201,8 @@ following message:
 [1.7.3](https://github.com/jscs-dev/node-jscs/tree/v1.7.3),
 [1.8.0](https://github.com/jscs-dev/node-jscs/tree/v1.8.0),
 [1.8.1](https://github.com/jscs-dev/node-jscs/tree/v1.8.1),
-[1.9.0](https://github.com/jscs-dev/node-jscs/tree/v1.9.0),
-1.10.0, 1.11.0, 1.11.1, 1.11.2, 1.11.3, 1.12.0, 1.13.0, 1.13.1, and
-2.0.0.
+[1.9.0](https://github.com/jscs-dev/node-jscs/tree/v1.9.0), 1.10.0,
+1.11.0, 1.11.1, 1.11.2, 1.11.3, 1.12.0, 1.13.0, 1.13.1, and 2.0.0.
 
 This module has been tested with Mimosa 2.3.x but should work with
 other versions of Mimosa as well.
@@ -205,8 +210,12 @@ other versions of Mimosa as well.
 Version history
 ---------------
 
-* **Next version**
-  Added JSCS v2.0.0 to list of compatible versions.
+* **Next version** Added JSCS v2.0.0 to list of compatible
+  versions. Starting with version 2.0.0 the API `mimos-jscs` uses is
+  part of JSCS' public API and is covered by the semver versioning
+  rules. This makes it much easier to manage compatibility,
+  `mimosa-jscs` should now be compatible with any JSCS version 2.x.y.
+  Updated the documentation accordingly.
 * **[2.3.0](https://github.com/al-broco/mimosa-jscs/tree/v2.3.0)**
   Added JSCS v1.13.0 and v1.13.1 to list of compatible versions.
 * **[2.2.0](https://github.com/al-broco/mimosa-jscs/tree/v2.2.0)**
