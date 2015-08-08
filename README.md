@@ -71,6 +71,7 @@ to work:
 * `maxErrors`. In build mode, `maxErrors` is the maximum number of
   reported violations per build. In watch mode, `maxErrors` is per
   file.
+* `errorFilter`. Paths are relative to the project root.
 * `esnext`.
 * `plugins`. Paths are relative to the project root.
 * `verbose`.
