@@ -107,7 +107,7 @@ in the file will still override a preset configured in `rules`.
 
 ### Examples
 
-To lint your Javascript use to JSCS'
+To lint your Javascript using JSCS'
 [Crockford](http://javascript.crockford.com/code.html) preset, add the
 following to your project's Mimosa configuration:
 
