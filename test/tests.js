@@ -581,8 +581,24 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
       });
     }
 
-    if (semver.satisfies(jscsVersion, '>= 1.7.3')) {
-      it('supports the esnext option which enables ES6 parsing', function () {
+    if (semver.neq(jscsVersion, '2.0.0')) {
+      // Note: JSCS v2.0.0 allows ES6+ code even if esnext is not set
+      it('does not allow ES6+ specific code if esnext option is not set',
+              function () {
+        project.mimosaConfig.jscs = { };
+
+        project.files.assets.javascripts['main.js'] = 'class Foo {} // ES6';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations.length).toBe(1);
+          expect(violations[0]).toMatch(/Unexpected reserved word/);
+        });
+      });
+    }
+
+    if (semver.satisfies(jscsVersion, '>=1.7.3 <2.0.0')) {
+      it('allows ES6+ specific code when esnext option is set',
+              function () {
         project.mimosaConfig.jscs = {
           rules: {
             esnext: true
@@ -593,6 +609,23 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
 
         return buildAndTest(project, function (violations) {
           expect(violations).toEqual([]);
+        });
+      });
+    } else if (semver.satisfies(jscsVersion, '>=2.0.0')) {
+      it('can check ES6+ code when esnext option is set', function () {
+        project.mimosaConfig.jscs = {
+          rules: {
+            verbose: true,
+            esnext: true,
+            disallowParenthesesAroundArrowParam: true
+          }
+        };
+
+        project.files.assets.javascripts['main.js'] = '(x) => x * x;';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations.length).toBe(1);
+          expect(violations[0]).toMatch(/disallowParenthesesAroundArrowParam/);
         });
       });
     }
