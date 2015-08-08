@@ -283,12 +283,12 @@ describe('mimosa-jscs', function () {
         project.mimosaConfig.jscs = { executeAfterCompile: false };
 
         project.files.assets.javascripts['valid_coffee.coffee'] =
-          '`var _foo`'; // valid coffeescript, invalid javascript
+          'alert "hi"'; // valid coffeescript, invalid javascript
 
         return buildAndTest(project, function (violations) {
           expectViolationsInFile(violations, 'valid_coffee.coffee');
           expect(violations.length).toBe(1);
-          expect(violations[0]).toMatch(/Unexpected token/);
+          expect(violations[0]).toMatch(/Unexpected string/);
         });
       });
     });
@@ -321,7 +321,7 @@ describe('mimosa-jscs', function () {
         project.mimosaConfig.jscs = { executeAfterCompile: true };
 
         project.files.assets.javascripts['valid_coffee.coffee'] =
-          '`var _foo`'; // valid coffeescript, invalid javascript
+          'alert "hi"'; // valid coffeescript, invalid javascript
 
         return buildAndTest(project, function (violations) {
           expect(violations).toEqual([]);
