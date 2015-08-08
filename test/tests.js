@@ -630,6 +630,24 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
       });
     }
 
+    if (semver.satisfies(jscsVersion, '>=2.0.0')) {
+      // Note: Can't think of a good way to check if JSCS honors the
+      // option so the test just checks if it allows it
+      it('allows es3 option to be set', function () {
+        project.mimosaConfig.jscs = {
+          rules: {
+            es3: true
+          }
+        };
+
+        project.files.assets.javascripts['main.js'] = '// Valid JS';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations).toEqual([]);
+        });
+      });
+    }
+
     describe('supports the additionalRules option', function () {
       // JS file that defines a rule that always reports one violation
       // with the description "Dummy error":
