@@ -801,6 +801,35 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
         });
       });
     }
+
+    if (semver.satisfies(jscsVersion, '>=2.0.0')) {
+      it('supports errorFilter, ' +
+         'filter path is relative to project root ', function () {
+        project.mimosaConfig.jscs = {
+          rules: {
+            verbose: true,
+            requireLineFeedAtFileEnd: true,
+            errorFilter: './filters/filter.js'
+          }
+        };
+
+        project.files.filters = {
+          'filter.js':
+            'module.exports = function(error) {\n' +
+            '  return error.filename.indexOf("exclude.js") == -1;\n' +
+            '}'
+        };
+
+        project.files.assets.javascripts['include.js'] = '// no line feed';
+        project.files.assets.javascripts['exclude.js'] = '// no line feed';
+
+        return buildAndTest(project, function (violations) {
+          expect(violations.length).toBe(1);
+          expect(violations[0]).toMatch(/Missing line feed/);
+          expect(violations[0]).toMatch(/include.js/);
+        });
+      });
+    }
   });
 });
 
