@@ -210,12 +210,16 @@ other versions of Mimosa as well.
 Version history
 ---------------
 
-* **Next version** Added JSCS v2.0.0 to list of compatible
-  versions. Starting with version 2.0.0 the API `mimos-jscs` uses is
-  part of JSCS' public API and is covered by the semver versioning
-  rules. This makes it much easier to manage compatibility,
-  `mimosa-jscs` should now be compatible with any JSCS version 2.x.y.
-  Updated the documentation accordingly.
+* **[3.0.0](https://github.com/al-broco/mimosa-jscs/tree/v3.0.0)**
+  Added JSCS v2.0.0 to list of compatible versions. Starting with
+  version 2.0.0 the API `mimos-jscs` uses is part of JSCS' public API
+  and is covered by the semver versioning rules. This makes it much
+  easier to manage compatibility, `mimosa-jscs` should now be
+  compatible with any JSCS version 2.x.y.  Updated the documentation
+  accordingly.
+
+  Major version bump because of JSCS' major version bump which may
+  break compatibility.
 * **[2.3.0](https://github.com/al-broco/mimosa-jscs/tree/v2.3.0)**
   Added JSCS v1.13.0 and v1.13.1 to list of compatible versions.
 * **[2.2.0](https://github.com/al-broco/mimosa-jscs/tree/v2.2.0)**
