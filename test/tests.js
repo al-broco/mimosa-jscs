@@ -582,10 +582,10 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
       });
     }
 
-    if (semver.neq(jscsVersion, '2.0.0')) {
-      // Note: JSCS v2.0.0 allows ES6+ code even if esnext is not set
+    if (!semver.satisfies(jscsVersion, '2.0.0 || 2.1.0')) {
+      // Note: JSCS v2.0.0-2.1.0 allows ES6+ code even if esnext is not set
       it('does not allow ES6+ specific code if esnext option is not set',
-              function () {
+         function () {
         project.mimosaConfig.jscs = { };
 
         project.files.assets.javascripts['main.js'] = 'class Foo {} // ES6';
@@ -732,7 +732,7 @@ JSCS_VERSIONS_TO_TEST.forEach(function (jscsVersion) {
           });
         });
 
-        if (semver.neq(jscsVersion, '2.0.0')) {
+        if (!semver.satisfies(jscsVersion, '2.0.0 || 2.1.0')) {
           // Preferred test for modules since it also tests that the
           // module is actually running
           it('published as an npm module (jscs-jsdoc)', function () {
