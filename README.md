@@ -222,6 +222,7 @@ other versions of Mimosa as well.
 Version history
 ---------------
 
+* **Next version** Added JSCS v2.1.0 to list of version to test with.
 * **[3.0.0](https://github.com/al-broco/mimosa-jscs/tree/v3.0.0)**
   Added JSCS v2.0.0 to list of compatible versions. Starting with
   version 2.0.0 the API `mimos-jscs` uses is part of JSCS' public API
