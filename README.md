@@ -223,6 +223,12 @@ Version history
 ---------------
 
 * **Next version** Added JSCS v2.1.0 to list of version to test with.
+
+  Added a travis build file so that Travis CI can run the tests. View
+  the status page [here](https://travis-ci.org/al-broco/mimosa-jscs).
+
+  dev branch status:
+  [![Build Status](https://travis-ci.org/al-broco/mimosa-jscs.svg?branch=dev)](https://travis-ci.org/al-broco/mimosa-jscs)
 * **[3.0.0](https://github.com/al-broco/mimosa-jscs/tree/v3.0.0)**
   Added JSCS v2.0.0 to list of compatible versions. Starting with
   version 2.0.0 the API `mimos-jscs` uses is part of JSCS' public API
