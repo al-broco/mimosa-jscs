@@ -64,7 +64,7 @@ exports.validate = function (config, validators) {
 
     if (!configFileExists && !config.jscs.rules) {
       logger.warn('Neither JSCS rules or JSCS config file specified, JSCS ' +
-                  'will check for syntax errors only');
+                  'will only do limited syntax checking');
     }
 
     if (!validators.ifExistsIsObject(errors, 'jscs.rules', config.jscs.rules)) {
