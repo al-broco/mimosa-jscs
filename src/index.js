@@ -198,7 +198,7 @@ function isFileExcludedBasedOnName(moduleConfig, absolutePath, relativePath) {
 function processFile(moduleConfig, file) {
   var jscs = loadJscs(moduleConfig);
   var text = moduleConfig.textToProcess(file);
-  var errors = checkString(jscs, text, file.inputFileName);
+  var errors = checkString(jscs, text);
   errors.forEach(function (error) {
     logJscsError(file.inputFileName, error);
   });
@@ -207,9 +207,9 @@ function processFile(moduleConfig, file) {
 /**
  * JSCS lints the contents of a file.
  */
-function checkString(jscs, string, inputFileName) {
+function checkString(jscs, string) {
   try {
-    var errors = jscs.checkString(string, inputFileName);
+    var errors = jscs.checkString(string);
     return errors.getErrorList();
   } catch (error) {
     // Early JSCS versions throw an exception on syntax errors, later
